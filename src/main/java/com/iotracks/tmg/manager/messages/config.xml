@@ -1,0 +1,4 @@
+<configuration>
+    <datamessageinteval>500</datamessageinteval>
+    <controlmessageinterval>10000</controlmessageinterval>
+</configuration>
