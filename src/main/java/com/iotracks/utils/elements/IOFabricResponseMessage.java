@@ -17,18 +17,16 @@ import java.util.Map;
 /**
  * IOFabricResponseMessage represents response from ioFabric REST calls.
  *
- * Created by forte on 3/23/16.
- *
  * @author ilaryionava
  */
 public class IOFabricResponseMessage {
 
-    private final String ID_FIELD_NAME = "id";
-    private final String STATUS_FIELD_NAME = "status";
-    private final String COUNT_FIELD_NAME = "count";
-    private final String CONFIG_FIELD_NAME = "config";
-    private final String MESSAGES_FIELD_NAME = "messages";
-    private final String TIMESTAMP_FIELD_NAME = "timestamp";
+    public static final String ID_FIELD_NAME = "id";
+    public static final String STATUS_FIELD_NAME = "status";
+    public static final String COUNT_FIELD_NAME = "count";
+    public static final String CONFIG_FIELD_NAME = "config";
+    public static final String MESSAGES_FIELD_NAME = "messages";
+    public static final String TIMESTAMP_FIELD_NAME = "timestamp";
 
     private String id;
     private String status;

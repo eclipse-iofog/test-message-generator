@@ -48,4 +48,8 @@ public class IOMessageUtils {
             return null;
         }
     }
+
+    public static String generateID(){
+        return "IOMSID_" + (long)Math.floor(Math.random()*1000*1000);
+    }
 }

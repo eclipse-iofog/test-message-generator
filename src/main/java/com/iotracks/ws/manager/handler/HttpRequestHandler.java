@@ -1,22 +1,37 @@
 package com.iotracks.ws.manager.handler;
 
+import com.iotracks.tmg.manager.TMGMessageManager;
+import com.iotracks.utils.IOMessageUtils;
+import com.iotracks.utils.elements.IOFabricResponseMessage;
+import com.iotracks.utils.elements.IOMessage;
 import com.iotracks.utils.elements.LocalAPIURLType;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.*;
+import io.netty.util.internal.StringUtil;
 
 import javax.json.*;
 import java.io.StringReader;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 
-import static io.netty.handler.codec.http.HttpMethod.POST;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
- * Created by forte on 4/1/16.
+ * HttpRequest handler for all REST requests to ioFabric.
  */
 public class HttpRequestHandler implements Callable {
+
+    private static final Logger log = Logger.getLogger(HttpRequestHandler.class.getName());
+
+    private final String ID_PARAM_NAME = "id";
+    private final String TIMEFRAME_START_PARAM_NAME = "timeframestart";
+    private final String TIMEFRAME_END_PARAM_NAME = "timeframeend";
+    private final String PUBLISHERS_PARAM_NAME = "publishers";
 
     private final FullHttpRequest req;
     private ByteBuf bytesData;
@@ -33,36 +48,168 @@ public class HttpRequestHandler implements Callable {
         HttpHeaders headers = req.headers();
 
         if (req.getMethod() != urlType.getHttpMethod()) {
-            // log incorrect http method
-            return new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.METHOD_NOT_ALLOWED);
+            return sendErrorResponse(Collections.singleton("Error: Incorrect HTTP method type."));
         }
 
         if(!(headers.get(HttpHeaders.Names.CONTENT_TYPE).equals("application/json"))){
-            // log incorrect type header
-            String errorMsg = " Incorrect content type ";
-            bytesData.writeBytes(errorMsg.getBytes());
-            return new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_REQUEST, bytesData);
+            return sendErrorResponse(Collections.singleton("Error: Incorrect HTTP headers."));
         }
 
+        ByteBuf msgBytes = req.content();
+        String requestBody = msgBytes.toString(io.netty.util.CharsetUtil.US_ASCII);
+        JsonReader reader = Json.createReader(new StringReader(requestBody));
+        JsonObject jsonObject = reader.readObject();
 
         switch (urlType) {
             case GET_CONFIG_REST_LOCAL_API:
-                // handle;
-                break;
+                return handleGetConfigRequest(jsonObject);
             case GET_NEXT_MSG_REST_LOCAL_API:
-                // handle;
-                break;
+                return handleNextMessageRequest(jsonObject);
             case POST_MSG_REST_LOCAL_API:
-                // handle;
-                break;
+                return handleNewMessageRequest(jsonObject);
             case GET_MSGS_QUERY_REST_LOCAL_API:
-                // handle;
-                break;
+                return handleMessagesQueryRequest(jsonObject);
         }
+        return sendErrorResponse(Collections.singleton("Error: Unhandled request call."));
+    }
 
-        // bytesData.writeBytes(responseData);
+    private void checkField(JsonObject jsonObject, String fieldName, Set<String > errors){
+        if(!jsonObject.containsKey(fieldName)){
+            errors.add("Error: Missing input field '" + fieldName +  "'.");
+        }
+    }
+
+    private void parseLongField(JsonObject jsonObject, String fieldName, Set<String > errors){
+        try{
+            Long.parseLong(jsonObject.getString(fieldName));
+        }catch(Exception e){
+            errors.add("Error: Invalid value of '" + fieldName + "'.");
+        }
+    }
+
+    private void parseIntField(JsonObject jsonObject, String fieldName, Set<String > errors){
+        parseFieldWithPattern(jsonObject, fieldName, errors, "[0-9]+");
+    }
+
+    private void parseFieldWithPattern(JsonObject jsonObject, String fieldName, Set<String > errors, String pattern){
+        if(jsonObject.containsKey(fieldName)){
+            String number = jsonObject.getString(fieldName);
+            if(!(number.matches(pattern))){
+                errors.add("Error: Invalid  value for field '" + fieldName + "'.");
+            }
+        }
+    }
+
+    private void parseStringField(JsonObject jsonObject, String fieldName, Set<String > errors){
+        if(!StringUtil.isNullOrEmpty(jsonObject.getString(fieldName))) {
+            errors.add("Error: Missing input field value for '" + fieldName + "'.");
+        }
+    }
+
+    private void validateMessage(JsonObject jsonObject, Set<String> errors){
+        checkField(jsonObject, IOMessage.PUBLISHER_FIELD_NAME, errors);
+        checkField(jsonObject, IOMessage.VERSION_FIELD_NAME, errors);
+        checkField(jsonObject, IOMessage.INFO_TYPE_FIELD_NAME, errors);
+        checkField(jsonObject, IOMessage.INFO_FORMAT_FIELD_NAME, errors);
+        checkField(jsonObject, IOMessage.CONTENT_DATA_FIELD_NAME, errors);
+
+        parseStringField(jsonObject, IOMessage.PUBLISHER_FIELD_NAME, errors);
+        parseStringField(jsonObject, IOMessage.INFO_TYPE_FIELD_NAME, errors);
+        parseStringField(jsonObject, IOMessage.INFO_FORMAT_FIELD_NAME, errors);
+
+        parseIntField(jsonObject, IOMessage.VERSION_FIELD_NAME, errors);
+        parseIntField(jsonObject, IOMessage.SEQUENCE_NUMBER_FIELD_NAME, errors);
+        parseIntField(jsonObject, IOMessage.SEQUENCE_TOTAL_FIELD_NAME, errors);
+        parseIntField(jsonObject, IOMessage.PRIORITY_FIELD_NAME, errors);
+        parseIntField(jsonObject, IOMessage.CHAIN_POSITION_FIELD_NAME, errors);
+
+        parseFieldWithPattern(jsonObject, IOMessage.DIFFICULTY_TARGET_FIELD_NAME, errors, "[0-9]*.?[0-9]*");
+    }
+
+    private void validateMessageID(JsonObject jsonObject, Set<String> errors){
+        checkField(jsonObject, ID_PARAM_NAME, errors);
+        if(StringUtil.isNullOrEmpty(jsonObject.getString(ID_PARAM_NAME))){
+            errors.add("Error: Missing input field '" + ID_PARAM_NAME + "' value.");
+            return;
+        }
+    }
+
+    private void validateMessageQuery(JsonObject jsonObject, Set<String> errors){
+        validateMessageID(jsonObject, errors);
+        checkField(jsonObject, PUBLISHERS_PARAM_NAME, errors);
+        checkField(jsonObject, TIMEFRAME_START_PARAM_NAME, errors);
+        checkField(jsonObject, TIMEFRAME_END_PARAM_NAME, errors);
+
+        parseLongField(jsonObject, TIMEFRAME_START_PARAM_NAME, errors);
+        parseLongField(jsonObject, TIMEFRAME_END_PARAM_NAME, errors);
+    }
+
+    private FullHttpResponse sendErrorResponse(Set<String> errors){
+        errors.forEach(error -> bytesData.writeBytes(error.getBytes()));
+        return new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_REQUEST, bytesData);
+    }
+
+    private FullHttpResponse sendResponse(){
         FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, bytesData);
         HttpHeaders.setContentLength(res, bytesData.readableBytes());
         return res;
+    }
+
+    private JsonObject buildMessagesResponse(List<IOMessage> messages) {
+        JsonArrayBuilder messagesBuilder = Json.createArrayBuilder();
+        messages.forEach(message -> messagesBuilder.add(message.getJson()));
+        return Json.createObjectBuilder()
+                .add(IOFabricResponseMessage.STATUS_FIELD_NAME, "okay")
+                .add(IOFabricResponseMessage.COUNT_FIELD_NAME, messages.size())
+                .add(IOFabricResponseMessage.MESSAGES_FIELD_NAME, messagesBuilder).build();
+    }
+
+    private FullHttpResponse handleGetConfigRequest(JsonObject jsonObject){
+        Set<String> errors = new HashSet<>();
+        validateMessageID(jsonObject, errors);
+        if(!errors.isEmpty()) {
+            return sendErrorResponse(errors);
+        }
+        bytesData.writeBytes(TMGMessageManager.getContainerConfig().toString().getBytes());
+        return sendResponse();
+    }
+
+    private FullHttpResponse handleNextMessageRequest(JsonObject jsonObject){
+        Set<String> errors = new HashSet<>();
+        validateMessageID(jsonObject, errors);
+        if(!errors.isEmpty()) {
+            return sendErrorResponse(errors);
+        }
+        bytesData.writeBytes(buildMessagesResponse(Collections.singletonList(TMGMessageManager.getRandomMessage())).toString().getBytes());
+        return sendResponse();
+    }
+
+    private FullHttpResponse handleNewMessageRequest(JsonObject jsonObject){
+        Set<String> errors = new HashSet<>();
+        validateMessage(jsonObject, errors);
+        if(!errors.isEmpty()) {
+            return sendErrorResponse(errors);
+        }
+        IOMessage newMessage = new IOMessage(jsonObject);
+        newMessage.setId(IOMessageUtils.generateID());
+        newMessage.setTimestamp(System.currentTimeMillis());
+        TMGMessageManager.saveMessage(newMessage);
+
+        JsonObject messageReceipt = Json.createObjectBuilder()
+                .add(IOFabricResponseMessage.ID_FIELD_NAME, newMessage.getId())
+                .add(IOFabricResponseMessage.TIMESTAMP_FIELD_NAME, newMessage.getTimestamp())
+                .add(IOFabricResponseMessage.STATUS_FIELD_NAME, "okay").build();
+        bytesData.writeBytes(messageReceipt.toString().getBytes());
+        return sendResponse();
+    }
+
+    private Object handleMessagesQueryRequest(JsonObject jsonObject){
+        Set<String> errors = new HashSet<>();
+        validateMessageQuery(jsonObject, errors);
+        if(!errors.isEmpty()) {
+            return sendErrorResponse(errors);
+        }
+        bytesData.writeBytes(buildMessagesResponse(TMGMessageManager.getAllMessages()).toString().getBytes());
+        return sendResponse();
     }
 }

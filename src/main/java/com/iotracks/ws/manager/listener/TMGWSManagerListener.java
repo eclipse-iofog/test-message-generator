@@ -1,6 +1,7 @@
 package com.iotracks.ws.manager.listener;
 
 import com.iotracks.tmg.manager.TMGMessageManager;
+import com.iotracks.utils.IOMessageUtils;
 import com.iotracks.utils.elements.IOMessage;
 import com.iotracks.utils.ByteUtils;
 import com.iotracks.ws.manager.WebSocketManager;
@@ -30,7 +31,7 @@ public class TMGWSManagerListener implements WebSocketManagerListener {
                 content.getBytes(readerIndex, byteArray);
                 int totalMsgLength = ByteUtils.bytesToInteger(Arrays.copyOfRange(byteArray, 0, 4));
                 IOMessage message = new IOMessage(Arrays.copyOfRange(byteArray, 4, totalMsgLength));
-                message.setId(generateID());
+                message.setId(IOMessageUtils.generateID());
                 message.setTimestamp(System.currentTimeMillis());
                 TMGMessageManager.saveMessage(message);
                 wsManager.sendReceipt(ctx, message.getId(), message.getTimestamp());
@@ -38,7 +39,5 @@ public class TMGWSManagerListener implements WebSocketManagerListener {
         }
     }
 
-    private String generateID(){
-        return "IOMSID_" + (long)Math.floor(Math.random()*1000*1000);
-    }
+
 }

@@ -19,11 +19,10 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Test Message Generator Handler mimics all ioFabric's API calls.
- *
- * Created by forte on 3/30/16.
  */
 public class TMGHandler extends SimpleChannelInboundHandler {
 
@@ -71,10 +70,14 @@ public class TMGHandler extends SimpleChannelInboundHandler {
     private void runTask(Callable<? extends Object> callable, ChannelHandlerContext ctx, FullHttpRequest req) {
         final Future<? extends Object> future = executor.submit(callable);
         future.addListener(new GenericFutureListener<Future<Object>>() {
-            public void operationComplete(Future<Object> future)
-                    throws Exception {
+            public void operationComplete(Future<Object> future){
                 if (future.isSuccess()) {
-                    sendHttpResponse(ctx, req, (FullHttpResponse)future.get());
+                    try {
+                        sendHttpResponse(ctx, req, (FullHttpResponse)future.get());
+                    } catch (InterruptedException | ExecutionException e){
+                        ctx.fireExceptionCaught(e);
+                        ctx.close();
+                    }
                 } else {
                     ctx.fireExceptionCaught(future.cause());
                     ctx.close();
@@ -83,8 +86,7 @@ public class TMGHandler extends SimpleChannelInboundHandler {
         });
     }
 
-    private static void sendHttpResponse(
-            ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res) throws Exception{
+    private static void sendHttpResponse( ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res){
         if (res.getStatus().code() != 200) {
             ByteBuf buf = Unpooled.copiedBuffer(res.getStatus().toString(), CharsetUtil.UTF_8);
             res.content().writeBytes(buf);
