@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="02f354c5-e2ae-49d0-ae0e-ca2c2e75b0be" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test-message-generator.iml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="" />
     </list>
     <ignored path="test-message-generator.iws" />
@@ -930,7 +929,7 @@
       <updated>1459516194198</updated>
       <workItem from="1459516198506" duration="11999000" />
       <workItem from="1459765664192" duration="10537000" />
-      <workItem from="1459776310057" duration="955000" />
+      <workItem from="1459776310057" duration="1014000" />
     </task>
     <task id="LOCAL-00001" summary="complete TestGenerator">
       <created>1459775283459</created>
@@ -944,11 +943,17 @@
       <option name="project" value="LOCAL" />
       <updated>1459777355532</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="- removed .idea folder">
+      <created>1459777443555</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1459777443555</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="23491000" />
+    <option name="totallyTimeSpent" value="23550000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="24" width="1375" height="876" extended-state="6" />
@@ -993,7 +998,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="complete TestGenerator" />
     <MESSAGE value="- removed unnecessary files&#10;- initial commit for .gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="- removed unnecessary files&#10;- initial commit for .gitignore" />
+    <MESSAGE value="- removed .idea folder" />
+    <option name="LAST_COMMIT_MESSAGE" value="- removed .idea folder" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
