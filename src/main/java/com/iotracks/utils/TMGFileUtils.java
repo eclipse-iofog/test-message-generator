@@ -23,8 +23,7 @@ public class TMGFileUtils {
 
     private static final Logger log = Logger.getLogger(TMGFileUtils.class.getName());
 
-    //private static final String FILE_PATH = "/etc/iofabric/";
-    private static final String FILE_PATH = "/home/forte/IdeaProjects/iotracks/java-element-utils/element-utils/src/main/java/com/iotracks/config/messages/";
+    private static final String FILE_PATH = "./";
 
     private static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -44,7 +43,7 @@ public class TMGFileUtils {
         try {
             return new FileReader(new File(fullname));
         } catch (FileNotFoundException e) {
-            log.warning("Can't find file by path: " + fullname);
+            log.warning("Can't find file by path: " + fullname + ". " + e.getMessage());
             return null;
         }
     }
@@ -61,11 +60,11 @@ public class TMGFileUtils {
             DocumentBuilder db = dbf.newDocumentBuilder();
             return db.parse(FILE_PATH + filename);
         } catch (ParserConfigurationException e) {
-            log.warning("Can't parse XML file " + FILE_PATH + filename);
+            log.warning("Can't parse XML file " + FILE_PATH + filename + ". " + e.getMessage());
         } catch (SAXException e) {
-            log.warning("SAXException with " + FILE_PATH + filename);
+            log.warning("SAXException with " + FILE_PATH + filename + ". " + e.getMessage());
         } catch (IOException e) {
-            log.warning("IOException with " + FILE_PATH + filename);
+            log.warning("IOException with " + FILE_PATH + filename + ". " + e.getMessage());
         }
         return null;
     }
@@ -84,9 +83,9 @@ public class TMGFileUtils {
             XMLSerializer xmlSerializer = new XMLSerializer(new FileOutputStream(FILE_PATH + filename), ouFormat);
             xmlSerializer.serialize(document);
         } catch (FileNotFoundException e) {
-            log.warning("Can't find XML file " + FILE_PATH + filename);
+            log.warning("Can't find XML file " + FILE_PATH + filename + ". " + e.getMessage());
         } catch (IOException e) {
-            log.warning("IOException: Couldn't save xml file " + FILE_PATH + filename);
+            log.warning("IOException: Couldn't save xml file " + FILE_PATH + filename + ". " + e.getMessage());
         }
     }
 }
