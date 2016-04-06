@@ -2,7 +2,7 @@ package com.iotracks.ws.manager.handler;
 
 import com.iotracks.tmg.manager.TMGMessageManager;
 import com.iotracks.utils.IOMessageUtils;
-import com.iotracks.utils.elements.IOFabricResponseMessage;
+import com.iotracks.utils.elements.IOFabricResponseUtils;
 import com.iotracks.utils.elements.IOMessage;
 import com.iotracks.utils.elements.LocalAPIURLType;
 import io.netty.buffer.ByteBuf;
@@ -159,9 +159,9 @@ public class HttpRequestHandler implements Callable {
         JsonArrayBuilder messagesBuilder = Json.createArrayBuilder();
         messages.forEach(message -> messagesBuilder.add(message.getJson()));
         return Json.createObjectBuilder()
-                .add(IOFabricResponseMessage.STATUS_FIELD_NAME, "okay")
-                .add(IOFabricResponseMessage.COUNT_FIELD_NAME, messages.size())
-                .add(IOFabricResponseMessage.MESSAGES_FIELD_NAME, messagesBuilder).build();
+                .add(IOFabricResponseUtils.STATUS_FIELD_NAME, "okay")
+                .add(IOFabricResponseUtils.COUNT_FIELD_NAME, messages.size())
+                .add(IOFabricResponseUtils.MESSAGES_FIELD_NAME, messagesBuilder).build();
     }
 
     private FullHttpResponse handleGetConfigRequest(JsonObject jsonObject){
@@ -196,9 +196,9 @@ public class HttpRequestHandler implements Callable {
         TMGMessageManager.saveMessage(newMessage);
 
         JsonObject messageReceipt = Json.createObjectBuilder()
-                .add(IOFabricResponseMessage.ID_FIELD_NAME, newMessage.getId())
-                .add(IOFabricResponseMessage.TIMESTAMP_FIELD_NAME, newMessage.getTimestamp())
-                .add(IOFabricResponseMessage.STATUS_FIELD_NAME, "okay").build();
+                .add(IOFabricResponseUtils.ID_FIELD_NAME, newMessage.getId())
+                .add(IOFabricResponseUtils.TIMESTAMP_FIELD_NAME, newMessage.getTimestamp())
+                .add(IOFabricResponseUtils.STATUS_FIELD_NAME, "okay").build();
         bytesData.writeBytes(messageReceipt.toString().getBytes());
         return sendResponse();
     }
