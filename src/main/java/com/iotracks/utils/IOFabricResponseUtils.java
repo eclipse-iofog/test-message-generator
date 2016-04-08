@@ -1,4 +1,4 @@
-package com.iotracks.utils.elements;
+package com.iotracks.utils;
 
 /**
  * Util class for all response field names that Container can get from ioFabric.

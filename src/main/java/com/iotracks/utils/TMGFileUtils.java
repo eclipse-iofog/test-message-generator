@@ -23,7 +23,7 @@ public class TMGFileUtils {
 
     private static final Logger log = Logger.getLogger(TMGFileUtils.class.getName());
 
-    private static final String FILE_PATH = "./";
+    private static final String FILE_PATH = "./files/";
 
     private static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 

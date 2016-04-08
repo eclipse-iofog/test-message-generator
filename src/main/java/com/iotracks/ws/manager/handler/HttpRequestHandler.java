@@ -2,7 +2,7 @@ package com.iotracks.ws.manager.handler;
 
 import com.iotracks.tmg.manager.TMGMessageManager;
 import com.iotracks.utils.IOMessageUtils;
-import com.iotracks.utils.elements.IOFabricResponseUtils;
+import com.iotracks.utils.IOFabricResponseUtils;
 import com.iotracks.utils.elements.IOMessage;
 import com.iotracks.utils.elements.LocalAPIURLType;
 import io.netty.buffer.ByteBuf;
@@ -48,11 +48,11 @@ public class HttpRequestHandler implements Callable {
         HttpHeaders headers = req.headers();
 
         if (req.getMethod() != urlType.getHttpMethod()) {
-            return sendErrorResponse(Collections.singleton("Error: Incorrect HTTP method type."));
+            return sendErrorResponse(Collections.singleton(" # Error: Incorrect HTTP method type."));
         }
 
         if(!(headers.get(HttpHeaders.Names.CONTENT_TYPE).equals("application/json"))){
-            return sendErrorResponse(Collections.singleton("Error: Incorrect HTTP headers."));
+            return sendErrorResponse(Collections.singleton(" # Error: Incorrect HTTP headers."));
         }
 
         ByteBuf msgBytes = req.content();
@@ -70,20 +70,20 @@ public class HttpRequestHandler implements Callable {
             case GET_MSGS_QUERY_REST_LOCAL_API:
                 return handleMessagesQueryRequest(jsonObject);
         }
-        return sendErrorResponse(Collections.singleton("Error: Unhandled request call."));
+        return sendErrorResponse(Collections.singleton("# Error: Unhandled request call."));
     }
 
     private void checkField(JsonObject jsonObject, String fieldName, Set<String > errors){
         if(!jsonObject.containsKey(fieldName)){
-            errors.add("Error: Missing input field '" + fieldName +  "'.");
+            errors.add(" # Error: Missing input field '" + fieldName +  "'.");
         }
     }
 
     private void parseLongField(JsonObject jsonObject, String fieldName, Set<String > errors){
         try{
-            Long.parseLong(jsonObject.getString(fieldName));
+            Long.parseLong(jsonObject.getJsonNumber(fieldName).toString());
         }catch(Exception e){
-            errors.add("Error: Invalid value of '" + fieldName + "'.");
+            errors.add(" # Error: Invalid value of '" + fieldName + "'.");
         }
     }
 
@@ -93,16 +93,16 @@ public class HttpRequestHandler implements Callable {
 
     private void parseFieldWithPattern(JsonObject jsonObject, String fieldName, Set<String > errors, String pattern){
         if(jsonObject.containsKey(fieldName)){
-            String number = jsonObject.getString(fieldName);
+            String number = jsonObject.getJsonNumber(fieldName).toString();
             if(!(number.matches(pattern))){
-                errors.add("Error: Invalid  value for field '" + fieldName + "'.");
+                errors.add(" # Error: Invalid  value for field '" + fieldName + "'.");
             }
         }
     }
 
     private void parseStringField(JsonObject jsonObject, String fieldName, Set<String > errors){
-        if(!StringUtil.isNullOrEmpty(jsonObject.getString(fieldName))) {
-            errors.add("Error: Missing input field value for '" + fieldName + "'.");
+        if(StringUtil.isNullOrEmpty(jsonObject.getString(fieldName))) {
+            errors.add(" # Error: Missing input field value for '" + fieldName + "'.");
         }
     }
 
@@ -129,7 +129,7 @@ public class HttpRequestHandler implements Callable {
     private void validateMessageID(JsonObject jsonObject, Set<String> errors){
         checkField(jsonObject, ID_PARAM_NAME, errors);
         if(StringUtil.isNullOrEmpty(jsonObject.getString(ID_PARAM_NAME))){
-            errors.add("Error: Missing input field '" + ID_PARAM_NAME + "' value.");
+            errors.add(" # Error: Missing input field '" + ID_PARAM_NAME + "' value.");
             return;
         }
     }

@@ -24,44 +24,61 @@ public class IOMessageConverter {
         NodeList properties = xmlMessage.getChildNodes();
         for(int i = 0; i < properties.getLength(); i++) {
             Node property = properties.item(i);
+            String nodeValue = property.getTextContent();
             if(property.getNodeName().equals(IOMessage.ID_FIELD_NAME)){
-                message.setId(property.getTextContent());
+                message.setId(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.TAG_FIELD_NAME)){
-                message.setTag(property.getTextContent());
+                message.setTag(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.GROUP_ID_FIELD_NAME)){
-                message.setGroupId(property.getTextContent());
+                message.setGroupId(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.SEQUENCE_NUMBER_FIELD_NAME)){
-                message.setSequenceNumber(Integer.valueOf(property.getTextContent()));
+                if(nodeValue != null ){
+                    message.setSequenceNumber(Integer.valueOf(nodeValue));
+                }
             } else if(property.getNodeName().equals(IOMessage.SEQUENCE_TOTAL_FIELD_NAME)){
-                message.setSequenceTotal(Integer.valueOf(property.getTextContent()));
+                if(nodeValue != null ) {
+                    message.setSequenceTotal(Integer.valueOf(nodeValue));
+                }
             } else if(property.getNodeName().equals(IOMessage.PRIORITY_FIELD_NAME)){
-                message.setPriority((byte) Integer.valueOf(property.getTextContent()).intValue());
+                if(nodeValue != null ) {
+                    message.setPriority((byte) Integer.valueOf(nodeValue).intValue());
+                }
             } else if(property.getNodeName().equals(IOMessage.TIMESTAMP_FIELD_NAME)){
-                message.setTimestamp(Long.valueOf(property.getTextContent()));
+                if(nodeValue != null ) {
+                    message.setTimestamp(Long.valueOf(nodeValue));
+                }
             } else if(property.getNodeName().equals(IOMessage.PUBLISHER_FIELD_NAME)){
-                message.setPublisher(property.getTextContent());
+                message.setPublisher(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.AUTH_ID_FIELD_NAME)){
-                message.setAuthId(property.getTextContent());
+                message.setAuthId(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.AUTH_GROUP_FIELD_NAME)){
-                message.setAuthGroup(property.getTextContent());
+                message.setAuthGroup(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.CHAIN_POSITION_FIELD_NAME)){
-                message.setChainPosition(Long.valueOf(property.getTextContent()));
+                if(nodeValue != null ) {
+                    message.setChainPosition(Long.valueOf(nodeValue));
+                }
             } else if(property.getNodeName().equals(IOMessage.HASH_FIELD_NAME)){
-                message.setHash(property.getTextContent());
+                message.setHash(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.PREVIOUS_HASH_FIELD_NAME)){
-                message.setPreviousHash(property.getTextContent());
+                message.setPreviousHash(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.NONCE_FIELD_NAME)){
-                message.setNonce(property.getTextContent());
+                message.setNonce(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.DIFFICULTY_TARGET_FIELD_NAME)){
-                message.setDifficultyTarget(Integer.valueOf(property.getTextContent()));
+                if(nodeValue != null ) {
+                    message.setDifficultyTarget(Integer.valueOf(nodeValue));
+                }
             } else if(property.getNodeName().equals(IOMessage.INFO_TYPE_FIELD_NAME)){
-                message.setInfoType(property.getTextContent());
+                message.setInfoType(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.INFO_FORMAT_FIELD_NAME)){
-                message.setInfoFormat(property.getTextContent());
+                message.setInfoFormat(nodeValue);
             } else if(property.getNodeName().equals(IOMessage.CONTEXT_DATA_FIELD_NAME)){
-                message.setContextData(property.getTextContent().getBytes());
+                if(nodeValue != null ) {
+                    message.setContextData(nodeValue.getBytes());
+                }
             } else if(property.getNodeName().equals(IOMessage.CONTENT_DATA_FIELD_NAME)){
-                message.setContentData(property.getTextContent().getBytes());
+                if(nodeValue != null ) {
+                    message.setContentData(nodeValue.getBytes());
+                }
             }
         }
         return message;

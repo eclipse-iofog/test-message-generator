@@ -29,7 +29,7 @@ public class WebSocketManager {
     public static final Byte OPCODE_ACK = 0xB;
     public static final Byte OPCODE_CONTROL_SIGNAL = 0xC;
     public static final Byte OPCODE_MSG = 0xD;
-    public static final Byte OPCODE_RECEIPT = 0xE; //TODO
+    public static final Byte OPCODE_RECEIPT = 0xE;
 
     private Map<String, ChannelHandlerContext> mControlWebsocketMap;
     private Map<String, ChannelHandlerContext> mMessageWebsocketMap;
@@ -121,7 +121,7 @@ public class WebSocketManager {
         buffer1.writeByte(OPCODE_RECEIPT.intValue());
         //send Length
         int msgIdLength = pMessageId.length();
-        buffer1.writeBytes(ByteUtils.integerToBytes(msgIdLength));
+        buffer1.writeByte(msgIdLength);
         buffer1.writeByte(Long.BYTES);
 
         //Send opcode, id and timestamp

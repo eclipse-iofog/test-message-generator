@@ -16,7 +16,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
 /**
- * Created by forte on 4/1/16.
+ * TMG - Test Message Generator main class (executor).
  */
 public class TestMessageGenerator {
 
@@ -24,7 +24,7 @@ public class TestMessageGenerator {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         final boolean SSL = System.getProperty("ssl") != null;
-        final int PORT = 10500;
+        final int PORT = 54321;
         final SslContext sslCtx;
         if (SSL) {
             SelfSignedCertificate ssc = new SelfSignedCertificate();
