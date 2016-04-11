@@ -13,5 +13,7 @@ public class IOFabricResponseUtils {
     public static final String CONFIG_FIELD_NAME = "config";
     public static final String MESSAGES_FIELD_NAME = "messages";
     public static final String TIMESTAMP_FIELD_NAME = "timestamp";
+    public static final String TIMEFRAME_START_FIELD_NAME = "timeframestart";
+    public static final String TIMEFRAME_END_FIELD_NAME = "timeframeend";
 
 }

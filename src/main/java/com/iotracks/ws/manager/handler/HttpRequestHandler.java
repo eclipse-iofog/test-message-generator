@@ -155,13 +155,18 @@ public class HttpRequestHandler implements Callable {
         return res;
     }
 
-    private JsonObject buildMessagesResponse(List<IOMessage> messages) {
+    private JsonObject buildMessagesResponse(List<IOMessage> messages, boolean isQueryRequest) {
         JsonArrayBuilder messagesBuilder = Json.createArrayBuilder();
         messages.forEach(message -> messagesBuilder.add(message.getJson()));
-        return Json.createObjectBuilder()
+        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
                 .add(IOFabricResponseUtils.STATUS_FIELD_NAME, "okay")
                 .add(IOFabricResponseUtils.COUNT_FIELD_NAME, messages.size())
-                .add(IOFabricResponseUtils.MESSAGES_FIELD_NAME, messagesBuilder).build();
+                .add(IOFabricResponseUtils.MESSAGES_FIELD_NAME, messagesBuilder);
+        if(isQueryRequest){
+            jsonBuilder.add(IOFabricResponseUtils.TIMEFRAME_START_FIELD_NAME, System.currentTimeMillis())
+                    .add(IOFabricResponseUtils.TIMEFRAME_END_FIELD_NAME, System.currentTimeMillis());
+        }
+        return jsonBuilder.build();
     }
 
     private FullHttpResponse handleGetConfigRequest(JsonObject jsonObject){
@@ -180,7 +185,7 @@ public class HttpRequestHandler implements Callable {
         if(!errors.isEmpty()) {
             return sendErrorResponse(errors);
         }
-        bytesData.writeBytes(buildMessagesResponse(Collections.singletonList(TMGMessageManager.getRandomMessage())).toString().getBytes());
+        bytesData.writeBytes(buildMessagesResponse(Collections.singletonList(TMGMessageManager.getRandomMessage()), false).toString().getBytes());
         return sendResponse();
     }
 
@@ -209,7 +214,7 @@ public class HttpRequestHandler implements Callable {
         if(!errors.isEmpty()) {
             return sendErrorResponse(errors);
         }
-        bytesData.writeBytes(buildMessagesResponse(TMGMessageManager.getAllMessages()).toString().getBytes());
+        bytesData.writeBytes(buildMessagesResponse(TMGMessageManager.getAllMessages(), true).toString().getBytes());
         return sendResponse();
     }
 }

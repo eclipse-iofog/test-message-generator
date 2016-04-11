@@ -30,7 +30,7 @@ public class TMGWSManagerListener implements WebSocketManagerListener {
                 int readerIndex = content.readerIndex();
                 content.getBytes(readerIndex, byteArray);
                 int totalMsgLength = ByteUtils.bytesToInteger(Arrays.copyOfRange(byteArray, 0, 4));
-                IOMessage message = new IOMessage(Arrays.copyOfRange(byteArray, 4, totalMsgLength));
+                IOMessage message = new IOMessage(Arrays.copyOfRange(byteArray, 4, totalMsgLength + 4));
                 message.setId(IOMessageUtils.generateID());
                 message.setTimestamp(System.currentTimeMillis());
                 TMGMessageManager.saveMessage(message);
