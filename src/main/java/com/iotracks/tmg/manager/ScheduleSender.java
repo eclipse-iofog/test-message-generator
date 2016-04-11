@@ -11,15 +11,15 @@ public class ScheduleSender {
 
     private ScheduledExecutorService mScheduler;
 
-    private int mMessInt;
-    private int mConfInt;
+    private long mMessInt;
+    private long mConfInt;
     private WebSocketManager mWsManager;
     private String mContId;
 
 
-    public ScheduleSender(int pMessInt, int pConfInt, String pContId, WebSocketManager pWsManager){
-        mMessInt = pMessInt;
-        mConfInt = pConfInt;
+    public ScheduleSender(String pContId, WebSocketManager pWsManager){
+        mMessInt = TMGConfigManager.getDataMessageInteval();
+        mConfInt = TMGConfigManager.getControlMessageInteval();
         mWsManager = pWsManager;
         mContId = pContId;
         mScheduler = Executors.newScheduledThreadPool(2);

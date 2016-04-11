@@ -1,5 +1,6 @@
 package com.iotracks.ws.manager.handler;
 
+import com.iotracks.tmg.manager.ScheduleSender;
 import com.iotracks.utils.elements.LocalAPIURLType;
 import com.iotracks.ws.manager.WebSocketManager;
 import com.iotracks.ws.manager.listener.TMGWSManagerListener;
@@ -30,6 +31,8 @@ public class TMGHandler extends SimpleChannelInboundHandler {
     private final WebSocketManager wsManager;
     private final boolean ssl;
 
+    private ScheduleSender schSender;
+
     public TMGHandler(boolean ssl, EventExecutorGroup executor) {
         super(false);
         this.ssl = ssl;
@@ -50,7 +53,7 @@ public class TMGHandler extends SimpleChannelInboundHandler {
         LocalAPIURLType urlType = LocalAPIURLType.getByUrl(request.getUri());
         if (urlType != null){
             runTask(new HttpRequestHandler(request, ctx.alloc().buffer(), urlType), ctx, request);
-        }else {
+        } else {
             String uri = request.getUri();
             uri = uri.substring(1);
             String[] tokens = uri.split("/");
@@ -58,11 +61,12 @@ public class TMGHandler extends SimpleChannelInboundHandler {
             String id = tokens[4].trim();
             if (url.equals(LocalAPIURLType.GET_CONTROL_WEB_SOCKET_LOCAL_API.getURL())) {
                 wsManager.initControlSocket(ctx, id, ssl, url, request);
-                return;
             } else if (url.equals(LocalAPIURLType.GET_MSG_WEB_SOCKET_LOCAL_API.getURL())) {
                 wsManager.initMessageSocket(ctx, id, ssl, url, request);
-                return;
             }
+            schSender = new ScheduleSender(id, wsManager);
+            schSender.start();
+            return;
         }
 
     }
@@ -100,6 +104,10 @@ public class TMGHandler extends SimpleChannelInboundHandler {
         }
     }
 
-
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if(schSender!=null) { schSender.stop(); }
+        super.exceptionCaught(ctx, cause);
+    }
 }
 
