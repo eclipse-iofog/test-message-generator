@@ -57,7 +57,7 @@ public class TMGMessageManager {
      */
     public static IOMessage getRandomMessage(){
         NodeList xmlMessagesList = getMessagesFile().getElementsByTagName(IO_MESSAGE_TAG_NAME);
-        int randomIndex = new Random().nextInt(xmlMessagesList.getLength() + 1);
+        int randomIndex = new Random().nextInt(xmlMessagesList.getLength()) + 1;
         return IOMessageConverter.getMessageFromNode(xmlMessagesList.item(randomIndex));
     }
 
