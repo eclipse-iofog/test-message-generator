@@ -1,10 +1,4 @@
 {
   "status":"okay",
-  "config":{
-      "property1":"value1",
-      "property2":"value2",
-      "property3":"value3",
-      "property4":"value4",
-      "property5":"value5"
-  }
+  "config": "{\"citycode\":\"5391997\",\"apikey\":\"6141811a6136148a00133488eadff0fb\", \"frequency\":200}"
 }
