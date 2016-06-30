@@ -26,8 +26,8 @@ public class ScheduleSender {
     }
 
     public void start(){
-        mScheduler.scheduleWithFixedDelay(new MessageSender(), 0, mMessInt, TimeUnit.SECONDS);
-        mScheduler.scheduleWithFixedDelay(new ConfigSender(), 0, mConfInt, TimeUnit.SECONDS);
+        mScheduler.scheduleWithFixedDelay(new MessageSender(), 0, mMessInt, TimeUnit.MILLISECONDS);
+        mScheduler.scheduleWithFixedDelay(new ConfigSender(), 0, mConfInt, TimeUnit.MILLISECONDS);
     }
 
     public void stop(){
