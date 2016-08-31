@@ -66,7 +66,6 @@ public class TMGHandler extends SimpleChannelInboundHandler {
                 wsManager.initControlSocket(ctx, id, ssl, url, request);
             } else if (url.equals(LocalAPIURLType.GET_MSG_WEB_SOCKET_LOCAL_API.getURL())) {
                 wsManager.initMessageSocket(ctx, id, ssl, url, request);
-                //wsManager.sendMessage(ctx, TMGMessageManager.getRandomMessage().getBytes());
             }
             if(schSender == null) {
                 schSender = new ScheduleSender(id, wsManager);

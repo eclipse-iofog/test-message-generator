@@ -40,7 +40,7 @@ public class ScheduleSender {
 
         @Override
         public void run() {
-            System.out.println("Sending message");
+            //System.out.println("Sending message");
             mWsManager.sendMessage(mContId, TMGMessageManager.getRandomMessage().getBytes());
         }
     }
@@ -49,7 +49,7 @@ public class ScheduleSender {
 
         @Override
         public void run() {
-            System.out.println("Sending control signal");
+            //System.out.println("Sending control signal");
             mWsManager.sendControl(mContId);
         }
     }

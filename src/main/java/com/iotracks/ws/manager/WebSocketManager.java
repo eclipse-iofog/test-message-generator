@@ -49,11 +49,11 @@ public class WebSocketManager {
         mControlSignalSendContextMap = new ConcurrentHashMap<>();
         mPingSendMap = Collections.synchronizedSet(new HashSet<>());
 
-        /*mScheduler = Executors.newScheduledThreadPool(4);
+        mScheduler = Executors.newScheduledThreadPool(4);
         mScheduler.scheduleWithFixedDelay(new MessageWatcher(mMessageSendContextMap, this), 0, 5, TimeUnit.SECONDS);
         mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 5, TimeUnit.SECONDS);
         mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
-        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);*/
+        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
         this.wsListener = wsListener;
     }
 
@@ -191,8 +191,9 @@ public class WebSocketManager {
         if (pFrame instanceof BinaryWebSocketFrame) {
             ByteBuf buffer2 = pFrame.content();
             if (buffer2.readableBytes() == 1) {
-                Byte opcode = buffer2.readByte(); // MEMORY leak
+                Byte opcode = buffer2.readByte();
                 if(opcode == OPCODE_ACK.intValue()){
+                    //System.out.println("GOT OPCODE_ACK via SOCKET");
                     invalidateAck(pCtx);
                     return true;
                 }

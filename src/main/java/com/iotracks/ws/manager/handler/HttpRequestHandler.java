@@ -56,7 +56,7 @@ public class HttpRequestHandler implements Callable {
         }
 
         ByteBuf msgBytes = req.content();
-        String requestBody = msgBytes.toString(io.netty.util.CharsetUtil.US_ASCII); // MEMORY leak
+        String requestBody = msgBytes.toString(io.netty.util.CharsetUtil.US_ASCII);
         JsonReader reader = Json.createReader(new StringReader(requestBody));
         JsonObject jsonObject = reader.readObject();
 
@@ -178,7 +178,7 @@ public class HttpRequestHandler implements Callable {
             return sendErrorResponse(errors);
         }
         bytesData.writeBytes(TMGMessageManager.getContainerConfig().toString().getBytes());
-        System.out.println("Sending config");
+        //System.out.println("Sending config");
         return sendResponse();
     }
 
@@ -201,7 +201,7 @@ public class HttpRequestHandler implements Callable {
         IOMessage newMessage = new IOMessage(jsonObject);
         newMessage.setId(IOMessageUtils.generateID());
         newMessage.setTimestamp(System.currentTimeMillis());
-        //TMGMessageManager.saveMessage(newMessage);
+        TMGMessageManager.saveMessage(newMessage);
 
         JsonObject messageReceipt = Json.createObjectBuilder()
                 .add(IOFabricResponseUtils.ID_FIELD_NAME, newMessage.getId())
