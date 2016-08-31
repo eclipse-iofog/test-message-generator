@@ -14,6 +14,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
 
 /**
  * TMG - Test Message Generator main class (executor).
@@ -23,6 +24,8 @@ public class TestMessageGenerator {
     public static void main(String[] args) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventExecutorGroup executor = new DefaultEventExecutorGroup(10);
+
         final boolean SSL = System.getProperty("ssl") != null;
         final int PORT = 54321;
         final SslContext sslCtx;
@@ -45,7 +48,7 @@ public class TestMessageGenerator {
                             }
                             pipeline.addLast(new HttpServerCodec());
                             pipeline.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
-                            pipeline.addLast(new TMGHandler(sslCtx != null , new DefaultEventExecutorGroup(10)));
+                            pipeline.addLast(new TMGHandler(sslCtx != null , executor));
                         }
                     });
             Channel ch = b.bind(PORT).sync().channel();

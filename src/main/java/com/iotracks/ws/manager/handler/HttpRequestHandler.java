@@ -81,8 +81,10 @@ public class HttpRequestHandler implements Callable {
 
     private void parseLongField(JsonObject jsonObject, String fieldName, Set<String > errors){
         try{
-            Long.parseLong(jsonObject.getJsonNumber(fieldName).toString());
-        }catch(Exception e){
+            if(jsonObject.containsKey(fieldName)) {
+                Long.parseLong(jsonObject.getJsonNumber(fieldName).toString());
+            }
+        } catch(Exception e){
             errors.add(" # Error: Invalid value of '" + fieldName + "'.");
         }
     }
@@ -101,7 +103,7 @@ public class HttpRequestHandler implements Callable {
     }
 
     private void parseStringField(JsonObject jsonObject, String fieldName, Set<String > errors){
-        if(StringUtil.isNullOrEmpty(jsonObject.getString(fieldName))) {
+        if(jsonObject.containsKey(fieldName) && StringUtil.isNullOrEmpty(jsonObject.getString(fieldName))) {
             errors.add(" # Error: Missing input field value for '" + fieldName + "'.");
         }
     }
@@ -128,7 +130,7 @@ public class HttpRequestHandler implements Callable {
 
     private void validateMessageID(JsonObject jsonObject, Set<String> errors){
         checkField(jsonObject, ID_PARAM_NAME, errors);
-        if(StringUtil.isNullOrEmpty(jsonObject.getString(ID_PARAM_NAME))){
+        if(jsonObject.containsKey(ID_PARAM_NAME) && StringUtil.isNullOrEmpty(jsonObject.getString(ID_PARAM_NAME))){
             errors.add(" # Error: Missing input field '" + ID_PARAM_NAME + "' value.");
             return;
         }
