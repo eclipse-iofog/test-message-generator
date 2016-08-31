@@ -1,9 +1,6 @@
 package com.iotracks.ws.manager.handler;
 
-import com.iotracks.tmg.TestMessageGenerator;
 import com.iotracks.tmg.manager.ScheduleSender;
-import com.iotracks.tmg.manager.TMGConfigManager;
-import com.iotracks.tmg.manager.TMGMessageManager;
 import com.iotracks.utils.elements.LocalAPIURLType;
 import com.iotracks.ws.manager.WebSocketManager;
 import com.iotracks.ws.manager.listener.TMGWSManagerListener;
