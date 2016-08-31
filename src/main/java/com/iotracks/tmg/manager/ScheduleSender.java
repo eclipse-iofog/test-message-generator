@@ -26,6 +26,8 @@ public class ScheduleSender {
     }
 
     public void start(){
+        /*mScheduler.schedule(new MessageSender(), mMessInt, TimeUnit.MILLISECONDS);
+        mScheduler.schedule(new ConfigSender(), mConfInt, TimeUnit.MILLISECONDS);*/
         mScheduler.scheduleWithFixedDelay(new MessageSender(), 0, mMessInt, TimeUnit.MILLISECONDS);
         mScheduler.scheduleWithFixedDelay(new ConfigSender(), 0, mConfInt, TimeUnit.MILLISECONDS);
     }
@@ -38,6 +40,7 @@ public class ScheduleSender {
 
         @Override
         public void run() {
+            System.out.println("Sending message");
             mWsManager.sendMessage(mContId, TMGMessageManager.getRandomMessage().getBytes());
         }
     }
@@ -46,6 +49,7 @@ public class ScheduleSender {
 
         @Override
         public void run() {
+            System.out.println("Sending control signal");
             mWsManager.sendControl(mContId);
         }
     }

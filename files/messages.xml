@@ -7,7 +7,7 @@
         <sequencetotal>1</sequencetotal>
         <priority>0</priority>
         <timestamp>1234567890123</timestamp>
-        <publisher>Ayew98wtosdhFSKdjhsdfkjhkjesdhg</publisher>
+        <publisher>publisher_1</publisher>
         <authid></authid>
         <authgroup></authgroup>
         <version>4</version>
@@ -18,8 +18,8 @@
         <difficultytarget>0</difficultytarget>
         <infotype>image/jpeg</infotype>
         <infoformat>base64</infoformat>
-        <contextdata></contextdata>
-        <contentdata>sDFDSKJhsdkljasjklweklfjwhefiauhw98p328946982weiusfhsdkufha</contentdata>
+        <contextdata>contextdata1</contextdata>
+        <contentdata>contentdata1</contentdata>
     </iomessage>
     <iomessage>
         <id>2</id>
@@ -29,7 +29,7 @@
         <sequencetotal>1</sequencetotal>
         <priority>0</priority>
         <timestamp>1234567890123</timestamp>
-        <publisher>Ayew98wtosdhFSKdjhsdfkjhkjesdhg</publisher>
+        <publisher>publisher_2</publisher>
         <authid></authid>
         <authgroup></authgroup>
         <version>4</version>
@@ -40,8 +40,8 @@
         <difficultytarget>0</difficultytarget>
         <infotype>image/jpeg</infotype>
         <infoformat>base64</infoformat>
-        <contextdata></contextdata>
-        <contentdata>sDFDSKJhsdkljasjklweklfjwhefiauhw98p328946982weiusfhsdkufha</contentdata>
+        <contextdata>contextdata2</contextdata>
+        <contentdata>contentdata2</contentdata>
     </iomessage>
     <iomessage>
         <id>3</id>
@@ -51,7 +51,7 @@
         <sequencetotal>1</sequencetotal>
         <priority>0</priority>
         <timestamp>1234567890123</timestamp>
-        <publisher>Ayew98wtosdhFSKdjhsdfkjhkjesdhg</publisher>
+        <publisher>publisher_3</publisher>
         <authid></authid>
         <authgroup></authgroup>
         <version>4</version>
@@ -62,7 +62,7 @@
         <difficultytarget>0</difficultytarget>
         <infotype>image/jpeg</infotype>
         <infoformat>base64</infoformat>
-        <contextdata></contextdata>
-        <contentdata>sDFDSKJhsdkljasjklweklfjwhefiauhw98p328946982weiusfhsdkufha</contentdata>
+        <contextdata>contextdata3</contextdata>
+        <contentdata>contentdata3</contentdata>
     </iomessage>
 </messages>

@@ -1,6 +1,9 @@
 package com.iotracks.ws.manager.handler;
 
+import com.iotracks.tmg.TestMessageGenerator;
 import com.iotracks.tmg.manager.ScheduleSender;
+import com.iotracks.tmg.manager.TMGConfigManager;
+import com.iotracks.tmg.manager.TMGMessageManager;
 import com.iotracks.utils.elements.LocalAPIURLType;
 import com.iotracks.ws.manager.WebSocketManager;
 import com.iotracks.ws.manager.listener.TMGWSManagerListener;
@@ -63,6 +66,7 @@ public class TMGHandler extends SimpleChannelInboundHandler {
                 wsManager.initControlSocket(ctx, id, ssl, url, request);
             } else if (url.equals(LocalAPIURLType.GET_MSG_WEB_SOCKET_LOCAL_API.getURL())) {
                 wsManager.initMessageSocket(ctx, id, ssl, url, request);
+                //wsManager.sendMessage(ctx, TMGMessageManager.getRandomMessage().getBytes());
             }
             if(schSender == null) {
                 schSender = new ScheduleSender(id, wsManager);
@@ -111,5 +115,6 @@ public class TMGHandler extends SimpleChannelInboundHandler {
         if(schSender!=null) { schSender.stop(); }
         super.exceptionCaught(ctx, cause);
     }
+
 }
 

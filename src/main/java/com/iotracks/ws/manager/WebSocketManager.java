@@ -1,5 +1,6 @@
 package com.iotracks.ws.manager;
 
+import com.iotracks.tmg.manager.TMGMessageManager;
 import com.iotracks.utils.ByteUtils;
 import com.iotracks.ws.manager.listener.WebSocketManagerListener;
 import io.netty.buffer.ByteBuf;
@@ -48,11 +49,11 @@ public class WebSocketManager {
         mControlSignalSendContextMap = new ConcurrentHashMap<>();
         mPingSendMap = Collections.synchronizedSet(new HashSet<>());
 
-        mScheduler = Executors.newScheduledThreadPool(4);
+        /*mScheduler = Executors.newScheduledThreadPool(4);
         mScheduler.scheduleWithFixedDelay(new MessageWatcher(mMessageSendContextMap, this), 0, 5, TimeUnit.SECONDS);
         mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 5, TimeUnit.SECONDS);
         mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
-        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
+        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);*/
         this.wsListener = wsListener;
     }
 
@@ -111,7 +112,6 @@ public class WebSocketManager {
         pCtx.channel().writeAndFlush(new BinaryWebSocketFrame(buffer1));
         Integer cnt = mControlSignalSendContextMap.get(pCtx);
         if(cnt == null){
-            cnt = 10;
             mControlSignalSendContextMap.put(pCtx, 10);
         }
     }
@@ -191,7 +191,7 @@ public class WebSocketManager {
         if (pFrame instanceof BinaryWebSocketFrame) {
             ByteBuf buffer2 = pFrame.content();
             if (buffer2.readableBytes() == 1) {
-                Byte opcode = buffer2.readByte();
+                Byte opcode = buffer2.readByte(); // MEMORY leak
                 if(opcode == OPCODE_ACK.intValue()){
                     invalidateAck(pCtx);
                     return true;

@@ -44,7 +44,7 @@ public class TestMessageGenerator {
                                 pipeline.addLast(sslCtx.newHandler(channel.alloc()));
                             }
                             pipeline.addLast(new HttpServerCodec());
-                            pipeline.addLast(new HttpObjectAggregator(65536));
+                            pipeline.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
                             pipeline.addLast(new TMGHandler(sslCtx != null , new DefaultEventExecutorGroup(10)));
                         }
                     });
