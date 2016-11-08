@@ -1,7 +1,10 @@
 package com.iotracks.tmg.manager;
 
 import com.iotracks.utils.TMGFileUtils;
+import com.iotracks.ws.manager.handler.HttpRequestHandler;
 import org.w3c.dom.Document;
+
+import java.util.logging.Logger;
 
 /**
  * Test Message Generator Configuration Manager.
@@ -9,6 +12,8 @@ import org.w3c.dom.Document;
  * Created by forte on 3/29/16.
  */
 public class TMGConfigManager {
+
+    private static final Logger log = Logger.getLogger(TMGConfigManager.class.getName());
 
     private static final String CONFIG_FILE_SOURCE = "config.xml";
     private static final String DATA_MSG_INTERVAL_TAG_NAME = "datamessageinteval";
@@ -22,7 +27,12 @@ public class TMGConfigManager {
      * @return long
      */
     public static long getDataMessageInteval(){
-        return Long.valueOf(getConfigFile().getElementsByTagName(DATA_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
+        Long interval = Long.valueOf(getConfigFile().getElementsByTagName(DATA_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
+        if (interval == null ) {
+            log.info("Couldn't retrieve Data Message Interval. Using default value = 5000 milliseconds.");
+            return 5000;
+        }
+        return interval;
     }
 
     /**
@@ -31,7 +41,12 @@ public class TMGConfigManager {
      * @return long
      */
     public static long getControlMessageInteval(){
-        return Long.valueOf(getConfigFile().getElementsByTagName(CONTROL_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
+        Long interval = Long.valueOf(getConfigFile().getElementsByTagName(CONTROL_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
+        if (interval == null ) {
+            log.info("Couldn't retrieve Control Message Interval. Using default value = 5000 milliseconds.");
+            return 5000;
+        }
+        return interval;
     }
 
     private static Document getConfigFile(){
