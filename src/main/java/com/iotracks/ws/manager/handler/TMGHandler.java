@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Test Message Generator Handler mimics all ioFabric's API calls.
+ * Test Message Generator Handler mimics all ioFog's API calls.
  */
 public class TMGHandler extends SimpleChannelInboundHandler {
 

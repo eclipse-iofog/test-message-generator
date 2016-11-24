@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>ioTracks Test Message Generator</name>
-    <description>Test Message Generator mimics ioFabric API server. Serves for test purposes.</description>
+    <description>Test Message Generator mimics ioFog API server. Serves for test purposes.</description>
     <url>http://www.iotracks.com/</url>
 
     <licenses>

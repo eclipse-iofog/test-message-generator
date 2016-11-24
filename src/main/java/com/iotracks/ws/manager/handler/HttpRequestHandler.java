@@ -2,7 +2,7 @@ package com.iotracks.ws.manager.handler;
 
 import com.iotracks.tmg.manager.TMGMessageManager;
 import com.iotracks.utils.IOMessageUtils;
-import com.iotracks.utils.IOFabricResponseUtils;
+import com.iotracks.utils.ioFogResponseUtils;
 import com.iotracks.utils.elements.IOMessage;
 import com.iotracks.utils.elements.LocalAPIURLType;
 import io.netty.buffer.ByteBuf;
@@ -22,7 +22,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
- * HttpRequest handler for all REST requests to ioFabric.
+ * HttpRequest handler for all REST requests to ioFog.
  */
 public class HttpRequestHandler implements Callable {
 
@@ -161,12 +161,12 @@ public class HttpRequestHandler implements Callable {
         JsonArrayBuilder messagesBuilder = Json.createArrayBuilder();
         messages.forEach(message -> messagesBuilder.add(message.getJson()));
         JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
-                .add(IOFabricResponseUtils.STATUS_FIELD_NAME, "okay")
-                .add(IOFabricResponseUtils.COUNT_FIELD_NAME, messages.size())
-                .add(IOFabricResponseUtils.MESSAGES_FIELD_NAME, messagesBuilder);
+                .add(ioFogResponseUtils.STATUS_FIELD_NAME, "okay")
+                .add(ioFogResponseUtils.COUNT_FIELD_NAME, messages.size())
+                .add(ioFogResponseUtils.MESSAGES_FIELD_NAME, messagesBuilder);
         if(isQueryRequest){
-            jsonBuilder.add(IOFabricResponseUtils.TIMEFRAME_START_FIELD_NAME, System.currentTimeMillis())
-                    .add(IOFabricResponseUtils.TIMEFRAME_END_FIELD_NAME, System.currentTimeMillis());
+            jsonBuilder.add(ioFogResponseUtils.TIMEFRAME_START_FIELD_NAME, System.currentTimeMillis())
+                    .add(ioFogResponseUtils.TIMEFRAME_END_FIELD_NAME, System.currentTimeMillis());
         }
         return jsonBuilder.build();
     }
@@ -204,9 +204,9 @@ public class HttpRequestHandler implements Callable {
         TMGMessageManager.saveMessage(newMessage);
 
         JsonObject messageReceipt = Json.createObjectBuilder()
-                .add(IOFabricResponseUtils.ID_FIELD_NAME, newMessage.getId())
-                .add(IOFabricResponseUtils.TIMESTAMP_FIELD_NAME, newMessage.getTimestamp())
-                .add(IOFabricResponseUtils.STATUS_FIELD_NAME, "okay").build();
+                .add(ioFogResponseUtils.ID_FIELD_NAME, newMessage.getId())
+                .add(ioFogResponseUtils.TIMESTAMP_FIELD_NAME, newMessage.getTimestamp())
+                .add(ioFogResponseUtils.STATUS_FIELD_NAME, "okay").build();
         bytesData.writeBytes(messageReceipt.toString().getBytes());
         return sendResponse();
     }
