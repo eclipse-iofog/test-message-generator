@@ -1,7 +1,6 @@
 package com.iotracks.tmg.manager;
 
 import com.iotracks.utils.TMGFileUtils;
-import com.iotracks.ws.manager.handler.HttpRequestHandler;
 import org.w3c.dom.Document;
 
 import java.util.logging.Logger;
@@ -27,12 +26,12 @@ public class TMGConfigManager {
      * @return long
      */
     public static long getDataMessageInteval(){
-        Long interval = Long.valueOf(getConfigFile().getElementsByTagName(DATA_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
-        if (interval == null ) {
-            log.info("Couldn't retrieve Data Message Interval. Using default value = 5000 milliseconds.");
+        try {
+            return Long.valueOf(getConfigFile().getElementsByTagName(DATA_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
+        } catch (Exception e) {
+            log.info("Error retrieving Data Message Interval. Switching to use default value = 5000 milliseconds. Error: " + e);
             return 5000;
         }
-        return interval;
     }
 
     /**
@@ -41,12 +40,12 @@ public class TMGConfigManager {
      * @return long
      */
     public static long getControlMessageInteval(){
-        Long interval = Long.valueOf(getConfigFile().getElementsByTagName(CONTROL_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
-        if (interval == null ) {
-            log.info("Couldn't retrieve Control Message Interval. Using default value = 5000 milliseconds.");
+        try {
+            return Long.valueOf(getConfigFile().getElementsByTagName(CONTROL_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
+        } catch (Exception e) {
+            log.info("Error retrieving Control Message Interval. Switching to use default value = 5000 milliseconds. Error: " + e);
             return 5000;
         }
-        return interval;
     }
 
     private static Document getConfigFile(){

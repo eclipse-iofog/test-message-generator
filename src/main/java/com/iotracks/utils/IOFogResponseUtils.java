@@ -5,7 +5,7 @@ package com.iotracks.utils;
  *
  * @author ilaryionava
  */
-public class ioFogResponseUtils {
+public class IOFogResponseUtils {
 
     public static final String ID_FIELD_NAME = "id";
     public static final String STATUS_FIELD_NAME = "status";

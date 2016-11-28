@@ -2,7 +2,7 @@ package com.iotracks.ws.manager.handler;
 
 import com.iotracks.tmg.manager.TMGMessageManager;
 import com.iotracks.utils.IOMessageUtils;
-import com.iotracks.utils.ioFogResponseUtils;
+import com.iotracks.utils.IOFogResponseUtils;
 import com.iotracks.utils.elements.IOMessage;
 import com.iotracks.utils.elements.LocalAPIURLType;
 import io.netty.buffer.ByteBuf;
@@ -161,12 +161,12 @@ public class HttpRequestHandler implements Callable {
         JsonArrayBuilder messagesBuilder = Json.createArrayBuilder();
         messages.forEach(message -> messagesBuilder.add(message.getJson()));
         JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
-                .add(ioFogResponseUtils.STATUS_FIELD_NAME, "okay")
-                .add(ioFogResponseUtils.COUNT_FIELD_NAME, messages.size())
-                .add(ioFogResponseUtils.MESSAGES_FIELD_NAME, messagesBuilder);
+                .add(IOFogResponseUtils.STATUS_FIELD_NAME, "okay")
+                .add(IOFogResponseUtils.COUNT_FIELD_NAME, messages.size())
+                .add(IOFogResponseUtils.MESSAGES_FIELD_NAME, messagesBuilder);
         if(isQueryRequest){
-            jsonBuilder.add(ioFogResponseUtils.TIMEFRAME_START_FIELD_NAME, System.currentTimeMillis())
-                    .add(ioFogResponseUtils.TIMEFRAME_END_FIELD_NAME, System.currentTimeMillis());
+            jsonBuilder.add(IOFogResponseUtils.TIMEFRAME_START_FIELD_NAME, System.currentTimeMillis())
+                    .add(IOFogResponseUtils.TIMEFRAME_END_FIELD_NAME, System.currentTimeMillis());
         }
         return jsonBuilder.build();
     }
@@ -204,9 +204,9 @@ public class HttpRequestHandler implements Callable {
         TMGMessageManager.saveMessage(newMessage);
 
         JsonObject messageReceipt = Json.createObjectBuilder()
-                .add(ioFogResponseUtils.ID_FIELD_NAME, newMessage.getId())
-                .add(ioFogResponseUtils.TIMESTAMP_FIELD_NAME, newMessage.getTimestamp())
-                .add(ioFogResponseUtils.STATUS_FIELD_NAME, "okay").build();
+                .add(IOFogResponseUtils.ID_FIELD_NAME, newMessage.getId())
+                .add(IOFogResponseUtils.TIMESTAMP_FIELD_NAME, newMessage.getTimestamp())
+                .add(IOFogResponseUtils.STATUS_FIELD_NAME, "okay").build();
         bytesData.writeBytes(messageReceipt.toString().getBytes());
         return sendResponse();
     }
