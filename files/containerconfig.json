@@ -1,4 +1,4 @@
 {
   "status":"okay",
-  "config": "{\"citycode\":\"5391997\",\"apikey\":\"17640e936ea00479c33ce5445eec0497\", \"frequency\":200}"
+  "config": "{\"port\":\"/dev/ttyUSB0\",\"baudrate\":9600}"
 }

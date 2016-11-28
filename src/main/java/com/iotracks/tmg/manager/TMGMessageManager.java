@@ -18,7 +18,7 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 /**
- * Test Message Generator Manager of IOMessages for mimicking communication with ioFabric.
+ * Test Message Generator Manager of IOMessages for mimicking communication with ioFog.
  *
  * Created by forte on 3/29/16.
  */
