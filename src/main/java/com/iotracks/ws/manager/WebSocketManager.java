@@ -49,11 +49,14 @@ public class WebSocketManager {
         mControlSignalSendContextMap = new ConcurrentHashMap<>();
         mPingSendMap = Collections.synchronizedSet(new HashSet<>());
 
+        // comment next batch of code if the code us running in deep debug mode : START
         mScheduler = Executors.newScheduledThreadPool(4);
         mScheduler.scheduleWithFixedDelay(new MessageWatcher(mMessageSendContextMap, this), 0, 5, TimeUnit.SECONDS);
         mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 5, TimeUnit.SECONDS);
         mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
         mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
+        // comment next batch of code if the code us running in deep debug mode : END
+
         this.wsListener = wsListener;
     }
 
