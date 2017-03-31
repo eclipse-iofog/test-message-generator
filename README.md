@@ -27,6 +27,9 @@ A developer can precisely mimic the production environment on their build machin
 
 To run TMG just download latest jar file and provide all configurations files (the full list and examples can be found under files folder):
 
+
+<pre>
 java -jar jar_file_name.jar 
+</pre>
 
 Notice! Before running TMG don't forget to turn off iofog: sudo service iofog stop.
