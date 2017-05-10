@@ -41,7 +41,7 @@ public class ScheduleSender {
         @Override
         public void run() {
             //System.out.println("Sending message");
-            mWsManager.sendMessage(mContId, TMGMessageManager.getRandomMessage().getBytes());
+            mWsManager.sendMessage(mContId, TMGMessageManager.getRandomMessage().toBytes());
         }
     }
 

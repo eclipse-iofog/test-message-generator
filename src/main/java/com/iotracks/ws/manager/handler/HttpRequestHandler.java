@@ -130,9 +130,8 @@ public class HttpRequestHandler implements Callable {
 
     private void validateMessageID(JsonObject jsonObject, Set<String> errors){
         checkField(jsonObject, ID_PARAM_NAME, errors);
-        if(jsonObject.containsKey(ID_PARAM_NAME) && StringUtil.isNullOrEmpty(jsonObject.getString(ID_PARAM_NAME))){
+        if(jsonObject.containsKey(ID_PARAM_NAME) && jsonObject.getString(ID_PARAM_NAME) == null){
             errors.add(" # Error: Missing input field '" + ID_PARAM_NAME + "' value.");
-            return;
         }
     }
 
@@ -159,7 +158,7 @@ public class HttpRequestHandler implements Callable {
 
     private JsonObject buildMessagesResponse(List<IOMessage> messages, boolean isQueryRequest) {
         JsonArrayBuilder messagesBuilder = Json.createArrayBuilder();
-        messages.forEach(message -> messagesBuilder.add(message.getJson()));
+        messages.forEach(message -> messagesBuilder.add(message.toJSON()));
         JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
                 .add(IOFogResponseUtils.STATUS_FIELD_NAME, "okay")
                 .add(IOFogResponseUtils.COUNT_FIELD_NAME, messages.size())

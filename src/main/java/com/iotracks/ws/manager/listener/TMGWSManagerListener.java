@@ -26,7 +26,7 @@ public class TMGWSManagerListener implements WebSocketManagerListener {
         if(content.isReadable()) {
             Byte opcode = content.readByte();
             if (opcode == WebSocketManager.OPCODE_MSG.intValue()) {
-                //System.out.println("GOT MSG via SOCKET");
+                System.out.println("GOT MSG via SOCKET");
                 byte[] byteArray = new byte[content.readableBytes()];
                 int readerIndex = content.readerIndex();
                 content.getBytes(readerIndex, byteArray);
@@ -34,8 +34,8 @@ public class TMGWSManagerListener implements WebSocketManagerListener {
                 IOMessage message = new IOMessage(Arrays.copyOfRange(byteArray, 4, totalMsgLength + 4));
                 message.setId(IOMessageUtils.generateID());
                 message.setTimestamp(System.currentTimeMillis());
-                //System.out.println("Message: \n" + message.toString());
-                TMGMessageManager.saveMessage(message);
+                System.out.println("Message: \n" + message.toString());
+//                TMGMessageManager.saveMessage(message);
                 wsManager.sendReceipt(ctx, message.getId(), message.getTimestamp());
             }
         }

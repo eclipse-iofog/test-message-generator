@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 /**
  * Utils class for convenient encoding and decoding for IOMessage
- *
+ * <p>
  * Created by forte on 3/23/16.
  *
  * @author ilaryionava
@@ -19,35 +19,34 @@ public class IOMessageUtils {
      * Method to encode byte array to base64 format.
      *
      * @param data - array of bytes to be encoded
-     *
      * @return byte[]
      */
     public static byte[] encodeBase64(byte[] data) {
-        try {
-            return Base64.getEncoder().encode(data);
-        } catch (Exception e) {
-            log.log(Level.WARNING, "Error encoding bytes to base64 format.");
-            return null;
+        if (data == null) {
+            return new byte[0];
         }
+        return Base64.getEncoder().encode(data);
     }
 
     /**
      * Method to decode byte array from base64 format.
      *
      * @param data - array of bytes to be decoded
-     *
      * @return byte[]
      */
     public static byte[] decodeBase64(byte[] data) {
+        if (data == null) {
+            return new byte[0];
+        }
         try {
             return Base64.getDecoder().decode(data);
-        } catch (Exception e) {
-            log.log(Level.WARNING, "Error decoding bytes from base64 format.");
-            return null;
+        } catch (IllegalArgumentException e) {
+            log.log(Level.WARNING, "Error while decoding base64 bytes.", e);
+            return new byte[0];
         }
     }
 
-    public static String generateID(){
-        return "IOMSID_" + (long)Math.floor(Math.random()*1000*1000);
+    public static String generateID() {
+        return "IOMSID_" + (long) Math.floor(Math.random() * 1000 * 1000);
     }
 }

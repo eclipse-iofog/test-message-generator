@@ -51,8 +51,8 @@ public class WebSocketManager {
 
         mScheduler = Executors.newScheduledThreadPool(4);
         mScheduler.scheduleWithFixedDelay(new MessageWatcher(mMessageSendContextMap, this), 0, 5, TimeUnit.SECONDS);
-        mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 5, TimeUnit.SECONDS);
-        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
+        mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 10, TimeUnit.SECONDS);
+        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 5, TimeUnit.SECONDS);
         mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
         this.wsListener = wsListener;
     }
@@ -108,7 +108,7 @@ public class WebSocketManager {
         //sendBinaryFrame(pCtx, new byte[]{OPCODE_CONTROL_SIGNAL});
         ByteBuf buffer1 = pCtx.alloc().buffer();
         buffer1.writeByte(OPCODE_CONTROL_SIGNAL);
-        buffer1.writeByte(Byte.SIZE);
+//        buffer1.writeByte(Byte.SIZE);
         pCtx.channel().writeAndFlush(new BinaryWebSocketFrame(buffer1));
         Integer cnt = mControlSignalSendContextMap.get(pCtx);
         if(cnt == null){
@@ -156,6 +156,7 @@ public class WebSocketManager {
     }
 
     public void closeSocket(ChannelHandlerContext pCtx){
+        System.out.println("closing socket");
         sendFrame(pCtx, new CloseWebSocketFrame());
         pCtx.channel().close();
         invalidateCtx(pCtx);
@@ -181,6 +182,7 @@ public class WebSocketManager {
     }
 
     private void handleData(ChannelHandlerContext pCtx, WebSocketFrame pFrame){
+        System.out.println("GOT some bin data via SOCKET");
         if (pFrame instanceof BinaryWebSocketFrame) {
             wsListener.handle(this, (BinaryWebSocketFrame)pFrame, pCtx);
         }
@@ -193,7 +195,7 @@ public class WebSocketManager {
             if (buffer2.readableBytes() == 1) {
                 Byte opcode = buffer2.readByte();
                 if(opcode == OPCODE_ACK.intValue()){
-                    //System.out.println("GOT OPCODE_ACK via SOCKET");
+                    System.out.println("GOT OPCODE_ACK via SOCKET");
                     invalidateAck(pCtx);
                     return true;
                 }
@@ -204,6 +206,7 @@ public class WebSocketManager {
 
     private boolean handleClose(ChannelHandlerContext pCtx, WebSocketFrame pFrame){
         if (pFrame instanceof CloseWebSocketFrame) {
+            System.out.println("close received");
             pCtx.channel().close();
             invalidateCtx(pCtx);
             return true;

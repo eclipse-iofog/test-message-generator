@@ -6,6 +6,10 @@ import com.iotracks.utils.IOMessageUtils;
 import javax.json.Json;
 import javax.json.JsonObject;
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import static com.oracle.jrockit.jfr.ContentType.Bytes;
 
 /**
  * IOMessage represent all message communication between ioFog and Containers.
@@ -56,44 +60,74 @@ public class IOMessage {
     private byte[] contextData;
     private byte[] contentData; // required
 
-    public IOMessage(){
-        super();
+    public IOMessage() {
     }
 
-    public IOMessage(byte[] rawBytes){
-        super();
-        convertBytesToMessage(null,rawBytes, 33);
+    public IOMessage(byte[] rawBytes) {
+        convertBytesToMessage(null, rawBytes, 33);
     }
 
     public IOMessage(byte[] header, byte[] data) {
-        super();
         convertBytesToMessage(header, data, 0);
     }
 
     public IOMessage(JsonObject json) {
-        super();
-        if (json.containsKey(ID_FIELD_NAME)){ setId(json.getString(ID_FIELD_NAME)); }
-        if (json.containsKey(TAG_FIELD_NAME)){ setTag(json.getString(TAG_FIELD_NAME)); }
-        if (json.containsKey(GROUP_ID_FIELD_NAME)){ setGroupId(json.getString(GROUP_ID_FIELD_NAME)); }
-        if (json.containsKey(SEQUENCE_NUMBER_FIELD_NAME)){ setSequenceNumber(json.getInt(SEQUENCE_NUMBER_FIELD_NAME)); }
-        if (json.containsKey(SEQUENCE_TOTAL_FIELD_NAME)){ setSequenceTotal(json.getInt(SEQUENCE_TOTAL_FIELD_NAME)); }
-        if (json.containsKey(PRIORITY_FIELD_NAME)){ setPriority((byte) json.getInt(PRIORITY_FIELD_NAME)); }
-        if (json.containsKey(TIMESTAMP_FIELD_NAME)){ setTimestamp(json.getJsonNumber(TIMESTAMP_FIELD_NAME).longValue()); }
-        if (json.containsKey(PUBLISHER_FIELD_NAME)){ setPublisher(json.getString(PUBLISHER_FIELD_NAME)); }
-        if (json.containsKey(AUTH_ID_FIELD_NAME)){ setAuthId(json.getString(AUTH_ID_FIELD_NAME)); }
-        if (json.containsKey(AUTH_GROUP_FIELD_NAME)){ setAuthGroup(json.getString(AUTH_GROUP_FIELD_NAME)); }
-        if (json.containsKey(CHAIN_POSITION_FIELD_NAME)){ setChainPosition(json.getJsonNumber(CHAIN_POSITION_FIELD_NAME).longValue()); }
-        if (json.containsKey(HASH_FIELD_NAME)){ setHash(json.getString(HASH_FIELD_NAME)); }
-        if (json.containsKey(PREVIOUS_HASH_FIELD_NAME)){ setPreviousHash(json.getString(PREVIOUS_HASH_FIELD_NAME)); }
-        if (json.containsKey(NONCE_FIELD_NAME)){ setNonce(json.getString(NONCE_FIELD_NAME)); }
-        if (json.containsKey(DIFFICULTY_TARGET_FIELD_NAME)){ setDifficultyTarget(json.getInt(DIFFICULTY_TARGET_FIELD_NAME));}
-        if (json.containsKey(INFO_TYPE_FIELD_NAME)){ setInfoType(json.getString(INFO_TYPE_FIELD_NAME)); }
-        if (json.containsKey(INFO_FORMAT_FIELD_NAME)){ setInfoFormat(json.getString(INFO_FORMAT_FIELD_NAME)); }
-        if (json.containsKey(CONTEXT_DATA_FIELD_NAME) ){
-            setContextData(IOMessageUtils.decodeBase64(json.getString(CONTEXT_DATA_FIELD_NAME).getBytes()));
+        if (json.containsKey(ID_FIELD_NAME)) {
+            id = json.getString(ID_FIELD_NAME);
         }
-        if (json.containsKey(CONTENT_DATA_FIELD_NAME) ){
-            setContentData(IOMessageUtils.decodeBase64(json.getString(CONTENT_DATA_FIELD_NAME).getBytes()));
+        if (json.containsKey(TAG_FIELD_NAME)) {
+            tag = json.getString(TAG_FIELD_NAME);
+        }
+        if (json.containsKey(GROUP_ID_FIELD_NAME)) {
+            groupId = json.getString(GROUP_ID_FIELD_NAME);
+        }
+        if (json.containsKey(SEQUENCE_NUMBER_FIELD_NAME)) {
+            sequenceNumber = json.getInt(SEQUENCE_NUMBER_FIELD_NAME);
+        }
+        if (json.containsKey(SEQUENCE_TOTAL_FIELD_NAME)) {
+            sequenceTotal = json.getInt(SEQUENCE_TOTAL_FIELD_NAME);
+        }
+        if (json.containsKey(PRIORITY_FIELD_NAME)) {
+            priority = (byte) json.getInt(PRIORITY_FIELD_NAME);
+        }
+        if (json.containsKey(TIMESTAMP_FIELD_NAME)) {
+            timestamp = json.getJsonNumber(TIMESTAMP_FIELD_NAME).longValue();
+        }
+        if (json.containsKey(PUBLISHER_FIELD_NAME)) {
+            publisher = json.getString(PUBLISHER_FIELD_NAME);
+        }
+        if (json.containsKey(AUTH_ID_FIELD_NAME)) {
+            authId = json.getString(AUTH_ID_FIELD_NAME);
+        }
+        if (json.containsKey(AUTH_GROUP_FIELD_NAME)) {
+            authGroup = json.getString(AUTH_GROUP_FIELD_NAME);
+        }
+        if (json.containsKey(CHAIN_POSITION_FIELD_NAME)) {
+            chainPosition = json.getJsonNumber(CHAIN_POSITION_FIELD_NAME).longValue();
+        }
+        if (json.containsKey(HASH_FIELD_NAME)) {
+            hash = json.getString(HASH_FIELD_NAME);
+        }
+        if (json.containsKey(PREVIOUS_HASH_FIELD_NAME)) {
+            previousHash = json.getString(PREVIOUS_HASH_FIELD_NAME);
+        }
+        if (json.containsKey(NONCE_FIELD_NAME)) {
+            nonce = json.getString(NONCE_FIELD_NAME);
+        }
+        if (json.containsKey(DIFFICULTY_TARGET_FIELD_NAME)) {
+            difficultyTarget = json.getInt(DIFFICULTY_TARGET_FIELD_NAME);
+        }
+        if (json.containsKey(INFO_TYPE_FIELD_NAME)) {
+            infoType = json.getString(INFO_TYPE_FIELD_NAME);
+        }
+        if (json.containsKey(INFO_FORMAT_FIELD_NAME)) {
+            infoFormat = json.getString(INFO_FORMAT_FIELD_NAME);
+        }
+        if (json.containsKey(CONTEXT_DATA_FIELD_NAME)) {
+            contextData = IOMessageUtils.decodeBase64(json.getString(CONTEXT_DATA_FIELD_NAME).getBytes());
+        }
+        if (json.containsKey(CONTENT_DATA_FIELD_NAME)) {
+            contentData = IOMessageUtils.decodeBase64(json.getString(CONTENT_DATA_FIELD_NAME).getBytes());
         }
     }
 
@@ -253,190 +287,191 @@ public class IOMessage {
         this.contentData = contentData;
     }
 
-    public JsonObject getJson(){
-        return Json.createObjectBuilder().add(ID_FIELD_NAME, getId())
-                .add(TAG_FIELD_NAME, getTag())
-                .add(GROUP_ID_FIELD_NAME, getGroupId())
-                .add(SEQUENCE_NUMBER_FIELD_NAME, getSequenceNumber())
-                .add(SEQUENCE_TOTAL_FIELD_NAME, getSequenceTotal())
-                .add(PRIORITY_FIELD_NAME, getPriority())
-                .add(TIMESTAMP_FIELD_NAME, getTimestamp())
-                .add(PUBLISHER_FIELD_NAME, getPublisher())
-                .add(AUTH_ID_FIELD_NAME, getAuthId())
-                .add(AUTH_GROUP_FIELD_NAME, getAuthGroup())
-                .add(VERSION_FIELD_NAME, getVersion())
-                .add(CHAIN_POSITION_FIELD_NAME, getChainPosition())
-                .add(HASH_FIELD_NAME, getHash())
-                .add(PREVIOUS_HASH_FIELD_NAME, getPreviousHash())
-                .add(NONCE_FIELD_NAME, getNonce())
-                .add(DIFFICULTY_TARGET_FIELD_NAME, getDifficultyTarget())
-                .add(INFO_TYPE_FIELD_NAME, getInfoType())
-                .add(INFO_FORMAT_FIELD_NAME, getInfoFormat())
-                .add(CONTEXT_DATA_FIELD_NAME, getContextData()==null ? "" : new String(IOMessageUtils.encodeBase64(getContextData())))
-                .add(CONTENT_DATA_FIELD_NAME, getContentData()==null ? "" : new String(IOMessageUtils.encodeBase64(getContentData())))
-                .build();
+    public JsonObject toJSON() {
+        return Json.createObjectBuilder()
+                   .add(ID_FIELD_NAME, id)
+                   .add(TAG_FIELD_NAME, tag)
+                   .add(GROUP_ID_FIELD_NAME, groupId)
+                   .add(SEQUENCE_NUMBER_FIELD_NAME, sequenceNumber)
+                   .add(SEQUENCE_TOTAL_FIELD_NAME, sequenceTotal)
+                   .add(PRIORITY_FIELD_NAME, priority)
+                   .add(TIMESTAMP_FIELD_NAME, timestamp)
+                   .add(PUBLISHER_FIELD_NAME, publisher)
+                   .add(AUTH_ID_FIELD_NAME, authId)
+                   .add(AUTH_GROUP_FIELD_NAME, authGroup)
+                   .add(VERSION_FIELD_NAME, version)
+                   .add(CHAIN_POSITION_FIELD_NAME, chainPosition)
+                   .add(HASH_FIELD_NAME, hash)
+                   .add(PREVIOUS_HASH_FIELD_NAME, previousHash)
+                   .add(NONCE_FIELD_NAME, nonce)
+                   .add(DIFFICULTY_TARGET_FIELD_NAME, difficultyTarget)
+                   .add(INFO_TYPE_FIELD_NAME, infoType)
+                   .add(INFO_FORMAT_FIELD_NAME, infoFormat)
+                   .add(CONTEXT_DATA_FIELD_NAME, new String(IOMessageUtils.encodeBase64(contextData)))
+                   .add(CONTENT_DATA_FIELD_NAME, new String(IOMessageUtils.encodeBase64(contentData)))
+                   .build();
     }
 
-    public byte[] getBytes(){
-        ByteArrayOutputStream headerBaos = new ByteArrayOutputStream();
-        ByteArrayOutputStream dataBaos = new ByteArrayOutputStream();
-        try {
-            //version
-            headerBaos.write(ByteUtils.shortToBytes(VERSION));
+    public byte[] toBytes() {
+        try (ByteArrayOutputStream headerBytes = new ByteArrayOutputStream();
+             ByteArrayOutputStream dataBytes = new ByteArrayOutputStream()) {
 
-            // id
-            int len = ByteUtils.getLength(getId());
-            headerBaos.write((byte) (len & 0xff));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getId()));
 
-            // tag
-            len = ByteUtils.getLength(getTag());
-            headerBaos.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getTag()));
+            headerBytes.write(ByteUtils.shortToBytes(VERSION));
+//            headerBytes.write(ByteBuffer.allocate(4).putShort(VERSION).array());
+            int len = ByteUtils.getLength(id);
+            headerBytes.write((byte) len);
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getId()));
+            }
 
-            //groupid
-            len = ByteUtils.getLength(getGroupId());
-            headerBaos.write((byte) (len & 0xff));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getGroupId()));
+            len = ByteUtils.getLength(tag);
+            headerBytes.write(ByteUtils.shortToBytes((short) len));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getTag()));
+            }
 
-            // seq no
-            if (getSequenceNumber() == 0)
-                headerBaos.write(0);
-            else {
-                dataBaos.write(ByteUtils.integerToBytes(getSequenceNumber()));
-                headerBaos.write(4);
+            len = ByteUtils.getLength(groupId);
+            headerBytes.write((byte) len);
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(groupId));
+            }
+
+            if (getSequenceNumber() == 0) {
+                headerBytes.write(0);
+            } else {
+                dataBytes.write(ByteUtils.integerToBytes(getSequenceNumber()));
+                headerBytes.write(4);
             }
 
             // seq total
-            if (getSequenceTotal() == 0)
-                headerBaos.write(0);
-            else {
-                dataBaos.write(ByteUtils.integerToBytes(getSequenceTotal()));
-                headerBaos.write(4);
+            if (getSequenceTotal() == 0) {
+                headerBytes.write(0);
+            } else {
+                dataBytes.write(ByteUtils.integerToBytes(getSequenceTotal()));
+                headerBytes.write(4);
             }
 
 
             // priority
-            if (getPriority() == 0)
-                headerBaos.write(0);
-            else {
-                headerBaos.write(1);
-                dataBaos.write(getPriority());
+            if (getPriority() == 0) {
+                headerBytes.write(0);
+            } else {
+                headerBytes.write(1);
+                dataBytes.write(getPriority());
             }
 
             //timestamp
-            if (getTimestamp() == 0)
-                headerBaos.write(0);
-            else {
-                headerBaos.write(8);
-                dataBaos.write(ByteUtils.longToBytes(getTimestamp()));
+            if (getTimestamp() == 0) {
+                headerBytes.write(0);
+            } else {
+                headerBytes.write(8);
+                dataBytes.write(ByteUtils.longToBytes(getTimestamp()));
             }
 
             // publisher
             len = ByteUtils.getLength(getPublisher());
-            headerBaos.write((byte) (len & 0xff));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getPublisher()));
+            headerBytes.write((byte) (len & 0xff));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getPublisher()));
+            }
 
             // authIdentifier
             len = ByteUtils.getLength(getAuthId());
-            headerBaos.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getAuthId()));
+            headerBytes.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getAuthId()));
+            }
 
             // authGroup
             len = ByteUtils.getLength(getAuthGroup());
-            headerBaos.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getAuthGroup()));
+            headerBytes.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getAuthGroup()));
+            }
 
             // chainPosition
-            if (getChainPosition() == 0)
-                headerBaos.write(0);
-            else {
-                headerBaos.write(8);
-                dataBaos.write(ByteUtils.longToBytes(getChainPosition()));
+            if (getChainPosition() == 0) {
+                headerBytes.write(0);
+            } else {
+                headerBytes.write(8);
+                dataBytes.write(ByteUtils.longToBytes(getChainPosition()));
             }
 
             // hash
             len = ByteUtils.getLength(getHash());
-            headerBaos.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getHash()));
+            headerBytes.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getHash()));
+            }
 
             // previousHash
             len = ByteUtils.getLength(getPreviousHash());
-            headerBaos.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getPreviousHash()));
+            headerBytes.write(ByteUtils.shortToBytes((short) len));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getPreviousHash()));
+            }
 
             // nonce
             len = ByteUtils.getLength(getNonce());
-            headerBaos.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getNonce()));
+            headerBytes.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getNonce()));
+            }
 
             // difficultyTarget
-            if (getDifficultyTarget() == 0)
-                headerBaos.write(0);
-            else {
-                headerBaos.write(4);
-                dataBaos.write(ByteUtils.integerToBytes(getDifficultyTarget()));
+            if (getDifficultyTarget() == 0) {
+                headerBytes.write(0);
+            } else {
+                headerBytes.write(4);
+                dataBytes.write(ByteUtils.integerToBytes(getDifficultyTarget()));
             }
 
             // infoType
             len = ByteUtils.getLength(getInfoType());
-            headerBaos.write((byte) (len & 0xff));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getInfoType()));
+            headerBytes.write((byte) (len & 0xff));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getInfoType()));
+            }
 
             // infoFormat
             len = ByteUtils.getLength(getInfoFormat());
-            headerBaos.write((byte) (len & 0xff));
-            if (len > 0)
-                dataBaos.write(ByteUtils.stringToBytes(getInfoFormat()));
+            headerBytes.write((byte) (len & 0xff));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(getInfoFormat()));
+            }
 
             // contextData
-            if (getContextData() == null)
-                headerBaos.write(ByteUtils.integerToBytes(0));
-            else {
-                headerBaos.write(ByteUtils.integerToBytes(getContextData().length));
-                dataBaos.write(getContextData());
+            if (getContextData() == null) {
+                headerBytes.write(ByteUtils.integerToBytes(0));
+            } else {
+                headerBytes.write(ByteUtils.integerToBytes(getContextData().length));
+                dataBytes.write(getContextData());
             }
 
             // contentData
-            if (getContentData() == null)
-                headerBaos.write(ByteUtils.integerToBytes(0));
-            else {
-                headerBaos.write(ByteUtils.integerToBytes(getContentData().length));
-                dataBaos.write(getContentData());
+            if (getContentData() == null) {
+                headerBytes.write(ByteUtils.integerToBytes(0));
+            } else {
+                headerBytes.write(ByteUtils.integerToBytes(getContentData().length));
+                dataBytes.write(getContentData());
             }
 
             ByteArrayOutputStream result = new ByteArrayOutputStream();
-            headerBaos.writeTo(result);
-            dataBaos.writeTo(result);
+            headerBytes.writeTo(result);
+            dataBytes.writeTo(result);
             return result.toByteArray();
         } catch (Exception e) {
             //TODO: log
-        } finally {
-            try {
-                headerBaos.close();
-                dataBaos.close();
-            } catch (Exception e) {
-                // TODO: log("Error when closing byte arrays streams");
-            }
         }
-        return new byte[] {};
+        return new byte[]{};
     }
 
-    private void convertBytesToMessage(byte[] header, byte[] data, int pos){
-        if(header == null || header.length == 0) {
+    private void convertBytesToMessage(byte[] header, byte[] data, int pos) {
+        if (header == null || header.length == 0) {
             header = data;
         }
-        version = ByteUtils.bytesToShort(ByteUtils.copyOfRange(header, 0, 2));
+        version = ByteUtils.bytesToShort(Arrays.copyOfRange(header, 0, 2));
 
         if (version != VERSION) {
             // TODO: incompatible version
@@ -445,31 +480,31 @@ public class IOMessage {
 
         int size = header[2];
         if (size > 0) {
-            setId(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setId(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
-        size = ByteUtils.bytesToShort(ByteUtils.copyOfRange(header, 3, 5));
+        size = ByteUtils.bytesToShort(Arrays.copyOfRange(header, 3, 5));
         if (size > 0) {
-            setTag(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setTag(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
         size = header[5];
         if (size > 0) {
-            setGroupId(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setGroupId(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
         size = header[6];
         if (size > 0) {
-            setSequenceNumber(ByteUtils.bytesToInteger(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setSequenceNumber(ByteUtils.bytesToInteger(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
         size = header[7];
         if (size > 0) {
-            setSequenceTotal(ByteUtils.bytesToInteger(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setSequenceTotal(ByteUtils.bytesToInteger(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
@@ -481,85 +516,85 @@ public class IOMessage {
 
         size = header[9];
         if (size > 0) {
-            setTimestamp(ByteUtils.bytesToLong(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setTimestamp(ByteUtils.bytesToLong(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
         size = header[10];
         if (size > 0) {
-            setPublisher(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setPublisher(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
-        size = ByteUtils.bytesToShort(ByteUtils.copyOfRange(header, 11, 13));
+        size = ByteUtils.bytesToShort(Arrays.copyOfRange(header, 11, 13));
         if (size > 0) {
-            setAuthId(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setAuthId(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
-        size = ByteUtils.bytesToShort(ByteUtils.copyOfRange(header, 13, 15));
+        size = ByteUtils.bytesToShort(Arrays.copyOfRange(header, 13, 15));
         if (size > 0) {
-            setAuthGroup(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setAuthGroup(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
         size = header[15];
         if (size > 0) {
-            setChainPosition(ByteUtils.bytesToLong(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setChainPosition(ByteUtils.bytesToLong(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
-        size = ByteUtils.bytesToShort(ByteUtils.copyOfRange(header, 16, 18));
+        size = ByteUtils.bytesToShort(Arrays.copyOfRange(header, 16, 18));
         if (size > 0) {
-            setHash(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setHash(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
-        size = ByteUtils.bytesToShort(ByteUtils.copyOfRange(header, 18, 20));
+        size = ByteUtils.bytesToShort(Arrays.copyOfRange(header, 18, 20));
         if (size > 0) {
-            setPreviousHash(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setPreviousHash(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
-        size = ByteUtils.bytesToShort(ByteUtils.copyOfRange(header, 20, 22));
+        size = ByteUtils.bytesToShort(Arrays.copyOfRange(header, 20, 22));
         if (size > 0) {
-            setNonce(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setNonce(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
         size = header[22];
         if (size > 0) {
-            setDifficultyTarget(ByteUtils.bytesToInteger(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setDifficultyTarget(ByteUtils.bytesToInteger(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
         size = header[23];
         if (size > 0) {
-            setInfoType(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setInfoType(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
         size = header[24];
         if (size > 0) {
-            setInfoFormat(ByteUtils.bytesToString(ByteUtils.copyOfRange(data, pos, pos + size)));
+            setInfoFormat(ByteUtils.bytesToString(Arrays.copyOfRange(data, pos, pos + size)));
             pos += size;
         }
 
-        size = ByteUtils.bytesToInteger(ByteUtils.copyOfRange(header, 25, 29));
+        size = ByteUtils.bytesToInteger(Arrays.copyOfRange(header, 25, 29));
         if (size > 0) {
-            setContextData(ByteUtils.copyOfRange(data, pos, pos + size));
+            setContextData(Arrays.copyOfRange(data, pos, pos + size));
             pos += size;
         }
 
-        size = ByteUtils.bytesToInteger(ByteUtils.copyOfRange(header, 29, 33));
+        size = ByteUtils.bytesToInteger(Arrays.copyOfRange(header, 29, 33));
         if (size > 0) {
-            setContentData(ByteUtils.copyOfRange(data, pos, pos + size));
+            setContentData(Arrays.copyOfRange(data, pos, pos + size));
         }
     }
 
     @Override
     public String toString() {
-        return "IOMessage{ " + getJson().toString() + " }";
+        return "IOMessage{ " + toJSON().toString() + " }";
     }
 
 }
