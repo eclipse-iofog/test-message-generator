@@ -1,5 +1,6 @@
 package com.iotracks.ws.manager;
 
+import com.iotracks.tmg.manager.TMGMessageManager;
 import com.iotracks.utils.ByteUtils;
 import com.iotracks.ws.manager.listener.WebSocketManagerListener;
 import io.netty.buffer.ByteBuf;
@@ -38,33 +39,37 @@ public class WebSocketManager {
     private Set<ChannelHandlerContext> mPingSendMap;
 
     private WebSocketManagerListener wsListener;
+
     private ScheduledExecutorService mScheduler;
 
-    public WebSocketManager(WebSocketManagerListener wsListener) {
+    public WebSocketManager(WebSocketManagerListener wsListener){
         mControlWebsocketMap = new ConcurrentHashMap<>();
         mMessageWebsocketMap = new ConcurrentHashMap<>();
         mMessageSendContextMap = new ConcurrentHashMap<>();
         mControlSignalSendContextMap = new ConcurrentHashMap<>();
         mPingSendMap = Collections.synchronizedSet(new HashSet<>());
 
+        // comment next batch of code if the code us running in deep debug mode : START
         mScheduler = Executors.newScheduledThreadPool(4);
-//        mScheduler.scheduleWithFixedDelay(new MessageWatcher(mMessageSendContextMap, this), 0, 5, TimeUnit.SECONDS);
-//        mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 10, TimeUnit.SECONDS);
-//        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 5, TimeUnit.SECONDS);
-//        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
+        mScheduler.scheduleWithFixedDelay(new MessageWatcher(mMessageSendContextMap, this), 0, 5, TimeUnit.SECONDS);
+        mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 5, TimeUnit.SECONDS);
+        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
+        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
+        // comment next batch of code if the code us running in deep debug mode : END
+
         this.wsListener = wsListener;
     }
 
-    public void sendMessage(String publisherId, byte[] pData) {
+    public void sendMessage(String publisherId, byte[] pData){
         ChannelHandlerContext ctx = mMessageWebsocketMap.get(publisherId);
-        if (ctx != null) {
+        if (ctx != null){
             sendMessage(ctx, pData);
-        } else {
-            throw new IllegalArgumentException("Context not found.");
+        }else{
+            new IllegalArgumentException("Context not found.");
         }
     }
 
-    private void sendMessage(ChannelHandlerContext pCtx, byte[] pData) {
+    public void sendMessage(ChannelHandlerContext pCtx, byte[] pData){
         byte[] header = new byte[5];
         byte[] bLenArr = ByteUtils.integerToBytes(pData.length);
         header[0] = OPCODE_MSG;
@@ -75,45 +80,46 @@ public class WebSocketManager {
 
         byte[] msg = new byte[header.length + pData.length];
         int i = 0;
-        for (byte b : header) {
+        for(byte b : header){
             msg[i] = b;
             i++;
         }
-        for (byte b : pData) {
+        for(byte b : pData){
             msg[i] = b;
             i++;
         }
         sendBinaryFrame(pCtx, msg);
 
         AckMarker marker = mMessageSendContextMap.get(pCtx);
-        if (marker == null) {
+        if(marker == null){
             marker = new AckMarker(10, pData);
             mMessageSendContextMap.put(pCtx, marker);
         }
     }
 
-    public void sendControl(String publisherId) {
+    public void sendControl(String publisherId){
         ChannelHandlerContext ctx = mControlWebsocketMap.get(publisherId);
-        if (ctx != null) {
+        if (ctx != null){
             sendControl(ctx);
-        } else {
-            throw new IllegalArgumentException("Context not found.");
+        }
+        else{
+            new IllegalArgumentException("Context not found.");
         }
     }
 
-    private void sendControl(ChannelHandlerContext pCtx) {
+    public void sendControl(ChannelHandlerContext pCtx){
         //sendBinaryFrame(pCtx, new byte[]{OPCODE_CONTROL_SIGNAL});
         ByteBuf buffer1 = pCtx.alloc().buffer();
         buffer1.writeByte(OPCODE_CONTROL_SIGNAL);
-//        buffer1.writeByte(Byte.SIZE);
+        buffer1.writeByte(Byte.SIZE);
         pCtx.channel().writeAndFlush(new BinaryWebSocketFrame(buffer1));
         Integer cnt = mControlSignalSendContextMap.get(pCtx);
-        if (cnt == null) {
+        if(cnt == null){
             mControlSignalSendContextMap.put(pCtx, 10);
         }
     }
 
-    public void sendReceipt(ChannelHandlerContext pCtx, String pMessageId, Long pMessageTimestamp) {
+    public void sendReceipt(ChannelHandlerContext pCtx, String pMessageId, Long pMessageTimestamp){
         ByteBuf buffer1 = pCtx.alloc().buffer();
         buffer1.writeByte(OPCODE_RECEIPT.intValue());
         //send Length
@@ -127,63 +133,70 @@ public class WebSocketManager {
         pCtx.channel().writeAndFlush(new BinaryWebSocketFrame(buffer1));
     }
 
-    private void sendPing(ChannelHandlerContext pCtx) {
+    public void sendAck(ChannelHandlerContext pCtx) {
+        ByteBuf buffer1 = pCtx.alloc().buffer();
+        buffer1.writeByte(OPCODE_ACK);
+        pCtx.channel().writeAndFlush(new BinaryWebSocketFrame(buffer1));
+    }
+
+    public void sendPing(ChannelHandlerContext pCtx){
         ByteBuf buffer1 = pCtx.alloc().buffer();
         buffer1.writeByte(OPCODE_PING.intValue());
         pCtx.channel().writeAndFlush(new PingWebSocketFrame(buffer1));
     }
 
-    private void sendBinaryFrame(ChannelHandlerContext pCtx, byte[] pData) {
-        if (!isCtxActual(pCtx)) {
-            throw new IllegalArgumentException("Context not found.");
+    private void sendBinaryFrame(ChannelHandlerContext pCtx, byte[] pData){
+        if(!isCtxActual(pCtx)){
+            new IllegalArgumentException("Context not found.");
         }
         ByteBuf buffer1 = pCtx.alloc().buffer();
         buffer1.writeBytes(pData);
         pCtx.channel().writeAndFlush(new BinaryWebSocketFrame(buffer1));
     }
 
-    private void sendFrame(ChannelHandlerContext pCtx, WebSocketFrame pFrame) {
+    public void sendFrame(ChannelHandlerContext pCtx,WebSocketFrame pFrame){
         pCtx.channel().writeAndFlush(pFrame);
     }
 
-    private void closeSocket(ChannelHandlerContext pCtx) {
-        System.out.println("closing socket");
+    public void closeSocket(ChannelHandlerContext pCtx){
         sendFrame(pCtx, new CloseWebSocketFrame());
         pCtx.channel().close();
         invalidateCtx(pCtx);
     }
 
-    public void eatFrame(ChannelHandlerContext pCtx, WebSocketFrame pFrame) {
-        boolean handled = handleClose(pCtx, pFrame);
-        if (!handled) {
+    public void eatFrame(ChannelHandlerContext pCtx, WebSocketFrame pFrame){
+        boolean handled = false;
+        if(!handled){
+            handled = handleClose(pCtx, pFrame);
+        }
+        if(!handled){
             handled = handlePing(pCtx, pFrame);
         }
-        if (!handled) {
+        if(!handled){
             handled = handleAck(pCtx, pFrame);
         }
-        if (!handled) {
+        if(!handled){
             handled = handlePong(pCtx, pFrame);
         }
-        if (!handled) {
+        if(!handled) {
             handleData(pCtx, pFrame);
         }
     }
 
-    private void handleData(ChannelHandlerContext pCtx, WebSocketFrame pFrame) {
-        System.out.println("GOT some bin data via SOCKET");
+    private void handleData(ChannelHandlerContext pCtx, WebSocketFrame pFrame){
         if (pFrame instanceof BinaryWebSocketFrame) {
-            wsListener.handle(this, (BinaryWebSocketFrame) pFrame, pCtx);
+            wsListener.handle(this, (BinaryWebSocketFrame)pFrame, pCtx);
         }
     }
 
 
-    private boolean handleAck(ChannelHandlerContext pCtx, WebSocketFrame pFrame) {
+    private boolean handleAck(ChannelHandlerContext pCtx, WebSocketFrame pFrame){
         if (pFrame instanceof BinaryWebSocketFrame) {
             ByteBuf buffer2 = pFrame.content();
             if (buffer2.readableBytes() == 1) {
                 Byte opcode = buffer2.readByte();
-                if (opcode.equals(OPCODE_ACK)) {
-                    System.out.println("GOT OPCODE_ACK via SOCKET");
+                if(opcode == OPCODE_ACK.intValue()){
+                    //System.out.println("GOT OPCODE_ACK via SOCKET");
                     invalidateAck(pCtx);
                     return true;
                 }
@@ -192,9 +205,8 @@ public class WebSocketManager {
         return false;
     }
 
-    private boolean handleClose(ChannelHandlerContext pCtx, WebSocketFrame pFrame) {
+    private boolean handleClose(ChannelHandlerContext pCtx, WebSocketFrame pFrame){
         if (pFrame instanceof CloseWebSocketFrame) {
-            System.out.println("close received");
             pCtx.channel().close();
             invalidateCtx(pCtx);
             return true;
@@ -202,12 +214,12 @@ public class WebSocketManager {
         return false;
     }
 
-    private boolean handlePong(ChannelHandlerContext pCtx, WebSocketFrame pFrame) {
+    private boolean handlePong(ChannelHandlerContext pCtx, WebSocketFrame pFrame){
         if (pFrame instanceof PongWebSocketFrame) {
             ByteBuf buffer = pFrame.content();
             if (buffer.readableBytes() == 1) {
                 Byte opcode = buffer.readByte();
-                if (opcode.equals(OPCODE_PONG)) {
+                if (opcode == OPCODE_PONG.intValue()) {
                     if (isCtxActual(pCtx)) {
                         mPingSendMap.remove(pCtx);
                         return true;
@@ -217,13 +229,12 @@ public class WebSocketManager {
         }
         return false;
     }
-
     private boolean handlePing(ChannelHandlerContext pCtx, WebSocketFrame pFrame) {
         if (pFrame instanceof PingWebSocketFrame) {
             ByteBuf buffer = pFrame.content();
             if (buffer.readableBytes() == 1) {
                 Byte opcode = buffer.readByte();
-                if (opcode.equals(OPCODE_PING)) {
+                if (opcode == OPCODE_PING.intValue()) {
                     if (isCtxActual(pCtx)) {
                         ByteBuf buffer1 = pCtx.alloc().buffer();
                         buffer1.writeByte(OPCODE_PONG.intValue());
@@ -236,53 +247,63 @@ public class WebSocketManager {
         return false;
     }
 
-    private void invalidateAck(ChannelHandlerContext pCtx) {
-        removeCtxFromMap(pCtx, mControlWebsocketMap);
+    private void invalidateAck(ChannelHandlerContext pCtx){
+        mControlWebsocketMap.remove(pCtx);
         mMessageSendContextMap.remove(pCtx);
     }
 
-    private void invalidateCtx(ChannelHandlerContext pCtx) {
+    private void invalidateCtx(ChannelHandlerContext pCtx){
         removeCtxFromMap(pCtx, mControlWebsocketMap);
         removeCtxFromMap(pCtx, mMessageWebsocketMap);
     }
 
-    private static void removeCtxFromMap(ChannelHandlerContext pCtx, Map<String, ChannelHandlerContext> pCtxMap) {
-        for (String id : pCtxMap.keySet()) {
+    private static void removeCtxFromMap(ChannelHandlerContext pCtx, Map<String, ChannelHandlerContext> pCtxMap){
+
+        for(String id : pCtxMap.keySet()){
             ChannelHandlerContext curCtx = pCtxMap.get(id);
-            if (curCtx.equals(pCtx)) {
+            if(curCtx.equals(pCtxMap)){
                 pCtxMap.remove(id);
             }
         }
     }
 
-    private boolean isCtxActual(ChannelHandlerContext pCtx) {
+    private boolean isCtxActual(ChannelHandlerContext pCtx){
         return isControlCtx(pCtx) || isMessageCtx(pCtx);
     }
 
-    private boolean isControlCtx(ChannelHandlerContext pCtx) {
+    private boolean isControlCtx(ChannelHandlerContext pCtx){
         return isCtxInMap(pCtx, mControlWebsocketMap);
     }
 
-    private boolean isMessageCtx(ChannelHandlerContext pCtx) {
+    private boolean isMessageCtx(ChannelHandlerContext pCtx){
         return isCtxInMap(pCtx, mMessageWebsocketMap);
     }
 
-    private static boolean isCtxInMap(ChannelHandlerContext pCtx, Map<String, ChannelHandlerContext> pCtxMap) {
+    private static boolean isCtxInMap(ChannelHandlerContext pCtx, Map<String, ChannelHandlerContext> pCtxMap){
         return pCtxMap.values().contains(pCtx);
     }
 
-    public void initMessageSocket(ChannelHandlerContext pCtx, String pContainerId, boolean pSsl, String pUrl,
-                                  FullHttpRequest pReq) {
+    public void initMessageSocket(ChannelHandlerContext pCtx, String pContainerId, boolean pSsl, String pUrl, FullHttpRequest pReq){
         initSocket(pCtx, pContainerId, pSsl, pUrl, pReq, mMessageWebsocketMap);
     }
 
-    public void initControlSocket(ChannelHandlerContext pCtx, String pContainerId, boolean pSsl, String pUrl,
-                                  FullHttpRequest pReq) {
+    public void initControlSocket(ChannelHandlerContext pCtx, String pContainerId, boolean pSsl, String pUrl, FullHttpRequest pReq){
         initSocket(pCtx, pContainerId, pSsl, pUrl, pReq, mControlWebsocketMap);
     }
 
-    private static void initSocket(ChannelHandlerContext pCtx, String pContainerId, boolean pSsl, String pUrl,
-                                   FullHttpRequest pReq, Map<String, ChannelHandlerContext> pSocketMap) {
+    public void addControlContext(ChannelHandlerContext pCtx, String containerId) {
+        mControlWebsocketMap.put(containerId, pCtx);
+    }
+
+    public void addMessageContext(ChannelHandlerContext pCtx, String containerId) {
+        mMessageWebsocketMap.put(containerId, pCtx);
+    }
+
+    public byte[] getMessage(ChannelHandlerContext pCtx) {
+        return mMessageSendContextMap.get(pCtx).getData();
+    }
+
+    private static void initSocket(ChannelHandlerContext pCtx, String pContainerId, boolean pSsl, String pUrl, FullHttpRequest pReq, Map<String, ChannelHandlerContext> pSocketMap){
         WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(buildWebSocketLocation(pSsl, pUrl, pReq), null, true);
         WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(pReq);
         if (handshaker == null) {
@@ -294,8 +315,9 @@ public class WebSocketManager {
     }
 
 
+
     private static String buildWebSocketLocation(boolean pSsl, String wsPath, FullHttpRequest pReq) {
-        String location = pReq.headers().get(HOST) + wsPath;
+        String location =  pReq.headers().get(HOST) + wsPath;
         if (pSsl) {
             return "wss://" + location;
         } else {
@@ -303,108 +325,104 @@ public class WebSocketManager {
         }
     }
 
-    private static class AckMarker {
+    private static class AckMarker{
         private int mSendCnt;
         private byte[] mData;
 
-        AckMarker(int pSendCnt, byte[] pData) {
+        public AckMarker(int pSendCnt, byte[] pData){
             mSendCnt = pSendCnt;
             mData = pData;
         }
 
-        int getSendCnt() {
+        public int getSendCnt(){
             return mSendCnt;
         }
 
-        byte[] getData() {
+        public byte[] getData(){
             return mData;
         }
 
-        void trying() {
+        public void trying(){
             mSendCnt--;
         }
     }
-//
-//    private class MessageWatcher implements Runnable {
-//
-//        private Map<ChannelHandlerContext, AckMarker> mMessageSendContextMap;
-//        private WebSocketManager mSocketManager;
-//
-//        MessageWatcher(Map<ChannelHandlerContext, AckMarker> pMessageSendContextMap, WebSocketManager pSocketManager) {
-//            mMessageSendContextMap = pMessageSendContextMap;
-//            mSocketManager = pSocketManager;
-//        }
-//
-//        @Override
-//        public void run() {
-//            for (ChannelHandlerContext ctx : mMessageSendContextMap.keySet()) {
-//                AckMarker marker = mMessageSendContextMap.get(ctx);
-//                if (marker.getSendCnt() > 0) {
-//                    marker.trying();
-//                    mSocketManager.sendMessage(ctx, marker.getData());
-//                } else {
-//                    mMessageSendContextMap.remove(ctx);
-//                    System.out.println("Closing socket in message watcher");
-//                    mSocketManager.closeSocket(ctx);
-//                }
-//            }
-//        }
-//    }
-//
-//    private class ControlWatcher implements Runnable {
-//
-//        private Map<ChannelHandlerContext, Integer> mControlSignalSendContextMap;
-//        private WebSocketManager mSocketManager;
-//
-//        ControlWatcher(Map<ChannelHandlerContext, Integer> pControlSignalSendContextMap,
-//                       WebSocketManager pSocketManager) {
-//            mControlSignalSendContextMap = pControlSignalSendContextMap;
-//            mSocketManager = pSocketManager;
-//        }
-//
-//        @Override
-//        public void run() {
-//            for (ChannelHandlerContext ctx : mControlSignalSendContextMap.keySet()) {
-//                int cnt = mControlSignalSendContextMap.get(ctx);
-//                if (cnt > 0) {
-//                    cnt--;
-//                    mControlSignalSendContextMap.put(ctx, cnt);
-//                    mSocketManager.sendControl(ctx);
-//                } else {
-//                    mControlSignalSendContextMap.remove(ctx);
-//                    System.out.println("Closing socket in control watcher");
-//                    mSocketManager.closeSocket(ctx);
-//                }
-//            }
-//        }
-//    }
-//
-//    private class PingWatcher implements Runnable {
-//
-//        private WebSocketManager mSocketManager;
-//        private Set<ChannelHandlerContext> mPingSendMap;
-//        private Map<String, ChannelHandlerContext> mWebsocketMap;
-//
-//        PingWatcher(Set<ChannelHandlerContext> pPingSendMap, Map<String, ChannelHandlerContext> pWebsocketMap,
-//                    WebSocketManager pSocketManager) {
-//            mSocketManager = pSocketManager;
-//            mPingSendMap = pPingSendMap;
-//            mWebsocketMap = pWebsocketMap;
-//        }
-//
-//        @Override
-//        public void run() {
-//            for (ChannelHandlerContext ctx : mPingSendMap) {
-//                System.out.println("Closing socket in ping watcher");
-//                mSocketManager.closeSocket(ctx);
-//                mPingSendMap.remove(ctx);
-//            }
-//
-//            for (String id : mWebsocketMap.keySet()) {
-//                ChannelHandlerContext ctx = mWebsocketMap.get(id);
-//                mPingSendMap.add(ctx);
-//                mSocketManager.sendPing(ctx);
-//            }
-//        }
-//    }
+
+    private class MessageWatcher implements Runnable{
+
+        private Map<ChannelHandlerContext, AckMarker> mMessageSendContextMap;
+        private WebSocketManager mSocketManager;
+
+        public MessageWatcher(Map<ChannelHandlerContext, AckMarker> pMessageSendContextMap, WebSocketManager pSocketManager){
+            mMessageSendContextMap = pMessageSendContextMap;
+            mSocketManager = pSocketManager;
+        }
+        @Override
+        public void run() {
+            for(ChannelHandlerContext ctx: mMessageSendContextMap.keySet()){
+                AckMarker marker = mMessageSendContextMap.get(ctx);
+                if(marker.getSendCnt() > 0){
+                    marker.trying();
+                    mSocketManager.sendMessage(ctx, marker.getData());
+                }
+                else{
+                    mMessageSendContextMap.remove(ctx);
+                    mSocketManager.closeSocket(ctx);
+                }
+            }
+        }
+    }
+
+    private class ControlWatcher implements Runnable{
+
+        private Map<ChannelHandlerContext, Integer> mControlSignalSendContextMap;
+        private WebSocketManager mSocketManager;
+
+        public ControlWatcher(Map<ChannelHandlerContext, Integer> pControlSignalSendContextMap,  WebSocketManager pSocketManager){
+            mControlSignalSendContextMap = pControlSignalSendContextMap;
+            mSocketManager = pSocketManager;
+        }
+
+        @Override
+        public void run() {
+            for(ChannelHandlerContext ctx : mControlSignalSendContextMap.keySet()){
+                int cnt = mControlSignalSendContextMap.get(ctx);
+                if(cnt > 0){
+                    cnt--;
+                    mControlSignalSendContextMap.put(ctx, cnt);
+                    mSocketManager.sendControl(ctx);
+                }
+                else{
+                    mControlSignalSendContextMap.remove(ctx);
+                    mSocketManager.closeSocket(ctx);
+                }
+            }
+        }
+    }
+
+    private class PingWatcher implements Runnable{
+
+        private WebSocketManager mSocketManager;
+        private Set<ChannelHandlerContext> mPingSendMap;
+        private Map<String, ChannelHandlerContext> mWebsocketMap;
+
+        public PingWatcher(Set<ChannelHandlerContext> pPingSendMap, Map<String, ChannelHandlerContext> pWebsocketMap, WebSocketManager pSocketManager){
+            mSocketManager = pSocketManager;
+            mPingSendMap = pPingSendMap;
+            mWebsocketMap = pWebsocketMap;
+        }
+
+        @Override
+        public void run() {
+            for(ChannelHandlerContext ctx : mPingSendMap){
+                mSocketManager.closeSocket(ctx);
+                mPingSendMap.remove(ctx);
+            }
+
+            for(String id : mWebsocketMap.keySet()){
+                ChannelHandlerContext ctx = mWebsocketMap.get(id);
+                mPingSendMap.add(ctx);
+                mSocketManager.sendPing(ctx);
+            }
+        }
+    }
 }
