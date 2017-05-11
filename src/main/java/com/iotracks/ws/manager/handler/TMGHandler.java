@@ -41,7 +41,7 @@ public class TMGHandler extends SimpleChannelInboundHandler {
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, Object msg){
+    public void channelRead0(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof FullHttpRequest) {
             handleHttpRequest(ctx, (FullHttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {
@@ -51,7 +51,7 @@ public class TMGHandler extends SimpleChannelInboundHandler {
 
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) {
         LocalAPIURLType urlType = LocalAPIURLType.getByUrl(request.getUri());
-        if (urlType != null){
+        if (urlType != null) {
             runTask(new HttpRequestHandler(request, ctx.alloc().buffer(), urlType), ctx, request);
         } else {
             String uri = request.getUri();
@@ -64,7 +64,7 @@ public class TMGHandler extends SimpleChannelInboundHandler {
             } else if (url.equals(LocalAPIURLType.GET_MSG_WEB_SOCKET_LOCAL_API.getURL())) {
                 wsManager.initMessageSocket(ctx, id, ssl, url, request);
             }
-            if(schSender == null) {
+            if (schSender == null) {
                 schSender = new ScheduleSender(id, wsManager);
             }
             schSender.start();
@@ -75,11 +75,11 @@ public class TMGHandler extends SimpleChannelInboundHandler {
     private void runTask(Callable<?> callable, ChannelHandlerContext ctx, FullHttpRequest req) {
         final Future<?> future = executor.submit(callable);
         future.addListener(new GenericFutureListener<Future<Object>>() {
-            public void operationComplete(Future<Object> future){
+            public void operationComplete(Future<Object> future) {
                 if (future.isSuccess()) {
                     try {
-                        sendHttpResponse(ctx, req, (FullHttpResponse)future.get());
-                    } catch (InterruptedException | ExecutionException e){
+                        sendHttpResponse(ctx, req, (FullHttpResponse) future.get());
+                    } catch (InterruptedException | ExecutionException e) {
                         ctx.fireExceptionCaught(e);
                         ctx.close();
                     }
@@ -91,7 +91,7 @@ public class TMGHandler extends SimpleChannelInboundHandler {
         });
     }
 
-    private static void sendHttpResponse( ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res){
+    private static void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res) {
         if (res.getStatus().code() != 200) {
             ByteBuf buf = Unpooled.copiedBuffer(res.getStatus().toString(), CharsetUtil.UTF_8);
             res.content().writeBytes(buf);
@@ -107,7 +107,9 @@ public class TMGHandler extends SimpleChannelInboundHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        if(schSender!=null) { schSender.stop(); }
+        if (schSender != null) {
+            schSender.stop();
+        }
         super.exceptionCaught(ctx, cause);
     }
 

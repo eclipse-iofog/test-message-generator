@@ -48,10 +48,10 @@ public class WebSocketManager {
         mPingSendMap = Collections.synchronizedSet(new HashSet<>());
 
         mScheduler = Executors.newScheduledThreadPool(4);
-        mScheduler.scheduleWithFixedDelay(new MessageWatcher(mMessageSendContextMap, this), 0, 5, TimeUnit.SECONDS);
-        mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 10, TimeUnit.SECONDS);
-        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 5, TimeUnit.SECONDS);
-        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
+//        mScheduler.scheduleWithFixedDelay(new MessageWatcher(mMessageSendContextMap, this), 0, 5, TimeUnit.SECONDS);
+//        mScheduler.scheduleWithFixedDelay(new ControlWatcher(mControlSignalSendContextMap, this), 0, 10, TimeUnit.SECONDS);
+//        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mControlWebsocketMap, this), 0, 5, TimeUnit.SECONDS);
+//        mScheduler.scheduleWithFixedDelay(new PingWatcher(mPingSendMap, mMessageWebsocketMap, this), 0, 10, TimeUnit.SECONDS);
         this.wsListener = wsListener;
     }
 
@@ -324,87 +324,87 @@ public class WebSocketManager {
             mSendCnt--;
         }
     }
-
-    private class MessageWatcher implements Runnable {
-
-        private Map<ChannelHandlerContext, AckMarker> mMessageSendContextMap;
-        private WebSocketManager mSocketManager;
-
-        MessageWatcher(Map<ChannelHandlerContext, AckMarker> pMessageSendContextMap, WebSocketManager pSocketManager) {
-            mMessageSendContextMap = pMessageSendContextMap;
-            mSocketManager = pSocketManager;
-        }
-
-        @Override
-        public void run() {
-            for (ChannelHandlerContext ctx : mMessageSendContextMap.keySet()) {
-                AckMarker marker = mMessageSendContextMap.get(ctx);
-                if (marker.getSendCnt() > 0) {
-                    marker.trying();
-                    mSocketManager.sendMessage(ctx, marker.getData());
-                } else {
-                    mMessageSendContextMap.remove(ctx);
-                    System.out.println("Closing socket in message watcher");
-                    mSocketManager.closeSocket(ctx);
-                }
-            }
-        }
-    }
-
-    private class ControlWatcher implements Runnable {
-
-        private Map<ChannelHandlerContext, Integer> mControlSignalSendContextMap;
-        private WebSocketManager mSocketManager;
-
-        ControlWatcher(Map<ChannelHandlerContext, Integer> pControlSignalSendContextMap,
-                       WebSocketManager pSocketManager) {
-            mControlSignalSendContextMap = pControlSignalSendContextMap;
-            mSocketManager = pSocketManager;
-        }
-
-        @Override
-        public void run() {
-            for (ChannelHandlerContext ctx : mControlSignalSendContextMap.keySet()) {
-                int cnt = mControlSignalSendContextMap.get(ctx);
-                if (cnt > 0) {
-                    cnt--;
-                    mControlSignalSendContextMap.put(ctx, cnt);
-                    mSocketManager.sendControl(ctx);
-                } else {
-                    mControlSignalSendContextMap.remove(ctx);
-                    System.out.println("Closing socket in control watcher");
-                    mSocketManager.closeSocket(ctx);
-                }
-            }
-        }
-    }
-
-    private class PingWatcher implements Runnable {
-
-        private WebSocketManager mSocketManager;
-        private Set<ChannelHandlerContext> mPingSendMap;
-        private Map<String, ChannelHandlerContext> mWebsocketMap;
-
-        PingWatcher(Set<ChannelHandlerContext> pPingSendMap, Map<String, ChannelHandlerContext> pWebsocketMap,
-                    WebSocketManager pSocketManager) {
-            mSocketManager = pSocketManager;
-            mPingSendMap = pPingSendMap;
-            mWebsocketMap = pWebsocketMap;
-        }
-
-        @Override
-        public void run() {
-            for (ChannelHandlerContext ctx : mPingSendMap) {
-                System.out.println("Closing socket in ping watcher");
-                mSocketManager.closeSocket(ctx);
-                mPingSendMap.remove(ctx);
-            }
-
-            for (String id : mWebsocketMap.keySet()) {
-                ChannelHandlerContext ctx = mWebsocketMap.get(id);
-                mPingSendMap.add(ctx);
-                mSocketManager.sendPing(ctx);
-            }
-        }
-    }
+//
+//    private class MessageWatcher implements Runnable {
+//
+//        private Map<ChannelHandlerContext, AckMarker> mMessageSendContextMap;
+//        private WebSocketManager mSocketManager;
+//
+//        MessageWatcher(Map<ChannelHandlerContext, AckMarker> pMessageSendContextMap, WebSocketManager pSocketManager) {
+//            mMessageSendContextMap = pMessageSendContextMap;
+//            mSocketManager = pSocketManager;
+//        }
+//
+//        @Override
+//        public void run() {
+//            for (ChannelHandlerContext ctx : mMessageSendContextMap.keySet()) {
+//                AckMarker marker = mMessageSendContextMap.get(ctx);
+//                if (marker.getSendCnt() > 0) {
+//                    marker.trying();
+//                    mSocketManager.sendMessage(ctx, marker.getData());
+//                } else {
+//                    mMessageSendContextMap.remove(ctx);
+//                    System.out.println("Closing socket in message watcher");
+//                    mSocketManager.closeSocket(ctx);
+//                }
+//            }
+//        }
+//    }
+//
+//    private class ControlWatcher implements Runnable {
+//
+//        private Map<ChannelHandlerContext, Integer> mControlSignalSendContextMap;
+//        private WebSocketManager mSocketManager;
+//
+//        ControlWatcher(Map<ChannelHandlerContext, Integer> pControlSignalSendContextMap,
+//                       WebSocketManager pSocketManager) {
+//            mControlSignalSendContextMap = pControlSignalSendContextMap;
+//            mSocketManager = pSocketManager;
+//        }
+//
+//        @Override
+//        public void run() {
+//            for (ChannelHandlerContext ctx : mControlSignalSendContextMap.keySet()) {
+//                int cnt = mControlSignalSendContextMap.get(ctx);
+//                if (cnt > 0) {
+//                    cnt--;
+//                    mControlSignalSendContextMap.put(ctx, cnt);
+//                    mSocketManager.sendControl(ctx);
+//                } else {
+//                    mControlSignalSendContextMap.remove(ctx);
+//                    System.out.println("Closing socket in control watcher");
+//                    mSocketManager.closeSocket(ctx);
+//                }
+//            }
+//        }
+//    }
+//
+//    private class PingWatcher implements Runnable {
+//
+//        private WebSocketManager mSocketManager;
+//        private Set<ChannelHandlerContext> mPingSendMap;
+//        private Map<String, ChannelHandlerContext> mWebsocketMap;
+//
+//        PingWatcher(Set<ChannelHandlerContext> pPingSendMap, Map<String, ChannelHandlerContext> pWebsocketMap,
+//                    WebSocketManager pSocketManager) {
+//            mSocketManager = pSocketManager;
+//            mPingSendMap = pPingSendMap;
+//            mWebsocketMap = pWebsocketMap;
+//        }
+//
+//        @Override
+//        public void run() {
+//            for (ChannelHandlerContext ctx : mPingSendMap) {
+//                System.out.println("Closing socket in ping watcher");
+//                mSocketManager.closeSocket(ctx);
+//                mPingSendMap.remove(ctx);
+//            }
+//
+//            for (String id : mWebsocketMap.keySet()) {
+//                ChannelHandlerContext ctx = mWebsocketMap.get(id);
+//                mPingSendMap.add(ctx);
+//                mSocketManager.sendPing(ctx);
+//            }
+//        }
+//    }
 }
