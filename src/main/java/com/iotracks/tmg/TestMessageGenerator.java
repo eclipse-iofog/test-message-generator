@@ -26,7 +26,7 @@ public class TestMessageGenerator {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         EventExecutorGroup executor = new DefaultEventExecutorGroup(10);
 
-        final boolean SSL = System.getProperty("ssl") != null;
+        final boolean SSL = Boolean.parseBoolean(System.getProperty("ssl"));
         final int PORT = 54321;
         final SslContext sslCtx;
         if (SSL) {

@@ -6,10 +6,7 @@ import com.iotracks.utils.IOMessageUtils;
 import javax.json.Json;
 import javax.json.JsonObject;
 import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-import static com.oracle.jrockit.jfr.ContentType.Bytes;
 
 /**
  * IOMessage represent all message communication between ioFog and Containers.
@@ -155,19 +152,19 @@ public class IOMessage {
         this.groupId = groupId;
     }
 
-    public Integer getSequenceNumber() {
+    public int getSequenceNumber() {
         return sequenceNumber;
     }
 
-    public void setSequenceNumber(Integer sequenceNumber) {
+    public void setSequenceNumber(int sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }
 
-    public Integer getSequenceTotal() {
+    public int getSequenceTotal() {
         return sequenceTotal;
     }
 
-    public void setSequenceTotal(Integer sequenceTotal) {
+    public void setSequenceTotal(int sequenceTotal) {
         this.sequenceTotal = sequenceTotal;
     }
 
@@ -314,11 +311,11 @@ public class IOMessage {
 
     public byte[] toBytes() {
         try (ByteArrayOutputStream headerBytes = new ByteArrayOutputStream();
-             ByteArrayOutputStream dataBytes = new ByteArrayOutputStream()) {
+             ByteArrayOutputStream dataBytes = new ByteArrayOutputStream();
+             ByteArrayOutputStream result = new ByteArrayOutputStream()) {
 
 
             headerBytes.write(ByteUtils.shortToBytes(VERSION));
-//            headerBytes.write(ByteBuffer.allocate(4).putShort(VERSION).array());
             int len = ByteUtils.getLength(id);
             headerBytes.write((byte) len);
             if (len > 0) {
@@ -340,20 +337,17 @@ public class IOMessage {
             if (getSequenceNumber() == 0) {
                 headerBytes.write(0);
             } else {
-                dataBytes.write(ByteUtils.integerToBytes(getSequenceNumber()));
+                dataBytes.write(ByteUtils.integerToBytes(sequenceNumber));
                 headerBytes.write(4);
             }
 
-            // seq total
             if (getSequenceTotal() == 0) {
                 headerBytes.write(0);
             } else {
-                dataBytes.write(ByteUtils.integerToBytes(getSequenceTotal()));
+                dataBytes.write(ByteUtils.integerToBytes(sequenceTotal));
                 headerBytes.write(4);
             }
 
-
-            // priority
             if (getPriority() == 0) {
                 headerBytes.write(0);
             } else {
@@ -361,108 +355,94 @@ public class IOMessage {
                 dataBytes.write(getPriority());
             }
 
-            //timestamp
             if (getTimestamp() == 0) {
                 headerBytes.write(0);
             } else {
                 headerBytes.write(8);
-                dataBytes.write(ByteUtils.longToBytes(getTimestamp()));
+                dataBytes.write(ByteUtils.longToBytes(timestamp));
             }
 
-            // publisher
             len = ByteUtils.getLength(getPublisher());
             headerBytes.write((byte) (len & 0xff));
             if (len > 0) {
-                dataBytes.write(ByteUtils.stringToBytes(getPublisher()));
+                dataBytes.write(ByteUtils.stringToBytes(publisher));
             }
 
-            // authIdentifier
             len = ByteUtils.getLength(getAuthId());
-            headerBytes.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
+            headerBytes.write(ByteUtils.shortToBytes((short) len));
             if (len > 0) {
-                dataBytes.write(ByteUtils.stringToBytes(getAuthId()));
+                dataBytes.write(ByteUtils.stringToBytes(authId));
             }
 
-            // authGroup
-            len = ByteUtils.getLength(getAuthGroup());
-            headerBytes.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
+            len = ByteUtils.getLength(authGroup);
+            headerBytes.write(ByteUtils.shortToBytes((short) len));
             if (len > 0) {
-                dataBytes.write(ByteUtils.stringToBytes(getAuthGroup()));
+                dataBytes.write(ByteUtils.stringToBytes(authGroup));
             }
 
-            // chainPosition
             if (getChainPosition() == 0) {
                 headerBytes.write(0);
             } else {
                 headerBytes.write(8);
-                dataBytes.write(ByteUtils.longToBytes(getChainPosition()));
+                dataBytes.write(ByteUtils.longToBytes(chainPosition));
             }
 
-            // hash
-            len = ByteUtils.getLength(getHash());
-            headerBytes.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
-            if (len > 0) {
-                dataBytes.write(ByteUtils.stringToBytes(getHash()));
-            }
-
-            // previousHash
-            len = ByteUtils.getLength(getPreviousHash());
+            len = ByteUtils.getLength(hash);
             headerBytes.write(ByteUtils.shortToBytes((short) len));
             if (len > 0) {
-                dataBytes.write(ByteUtils.stringToBytes(getPreviousHash()));
+                dataBytes.write(ByteUtils.stringToBytes(hash));
             }
 
-            // nonce
-            len = ByteUtils.getLength(getNonce());
-            headerBytes.write(ByteUtils.shortToBytes((short) (len & 0xffff)));
+            len = ByteUtils.getLength(previousHash);
+            headerBytes.write(ByteUtils.shortToBytes((short) len));
             if (len > 0) {
-                dataBytes.write(ByteUtils.stringToBytes(getNonce()));
+                dataBytes.write(ByteUtils.stringToBytes(previousHash));
             }
 
-            // difficultyTarget
+            len = ByteUtils.getLength(getNonce());
+            headerBytes.write(ByteUtils.shortToBytes((short) len));
+            if (len > 0) {
+                dataBytes.write(ByteUtils.stringToBytes(nonce));
+            }
+
             if (getDifficultyTarget() == 0) {
                 headerBytes.write(0);
             } else {
                 headerBytes.write(4);
-                dataBytes.write(ByteUtils.integerToBytes(getDifficultyTarget()));
+                dataBytes.write(ByteUtils.integerToBytes(difficultyTarget));
             }
 
-            // infoType
             len = ByteUtils.getLength(getInfoType());
-            headerBytes.write((byte) (len & 0xff));
+            headerBytes.write((byte) len);
             if (len > 0) {
-                dataBytes.write(ByteUtils.stringToBytes(getInfoType()));
+                dataBytes.write(ByteUtils.stringToBytes(infoType));
             }
 
-            // infoFormat
-            len = ByteUtils.getLength(getInfoFormat());
-            headerBytes.write((byte) (len & 0xff));
+            len = ByteUtils.getLength(infoFormat);
+            headerBytes.write((byte) len);
             if (len > 0) {
-                dataBytes.write(ByteUtils.stringToBytes(getInfoFormat()));
+                dataBytes.write(ByteUtils.stringToBytes(infoFormat));
             }
 
-            // contextData
             if (getContextData() == null) {
                 headerBytes.write(ByteUtils.integerToBytes(0));
             } else {
-                headerBytes.write(ByteUtils.integerToBytes(getContextData().length));
-                dataBytes.write(getContextData());
+                headerBytes.write(ByteUtils.integerToBytes(contextData.length));
+                dataBytes.write(contextData);
             }
 
-            // contentData
             if (getContentData() == null) {
                 headerBytes.write(ByteUtils.integerToBytes(0));
             } else {
-                headerBytes.write(ByteUtils.integerToBytes(getContentData().length));
-                dataBytes.write(getContentData());
+                headerBytes.write(ByteUtils.integerToBytes(contentData.length));
+                dataBytes.write(contentData);
             }
 
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
             headerBytes.writeTo(result);
             dataBytes.writeTo(result);
             return result.toByteArray();
         } catch (Exception e) {
-            //TODO: log
+            e.printStackTrace();
         }
         return new byte[]{};
     }

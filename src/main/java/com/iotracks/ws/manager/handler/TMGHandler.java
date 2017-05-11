@@ -68,13 +68,12 @@ public class TMGHandler extends SimpleChannelInboundHandler {
                 schSender = new ScheduleSender(id, wsManager);
             }
             schSender.start();
-            return;
         }
 
     }
 
-    private void runTask(Callable<? extends Object> callable, ChannelHandlerContext ctx, FullHttpRequest req) {
-        final Future<? extends Object> future = executor.submit(callable);
+    private void runTask(Callable<?> callable, ChannelHandlerContext ctx, FullHttpRequest req) {
+        final Future<?> future = executor.submit(callable);
         future.addListener(new GenericFutureListener<Future<Object>>() {
             public void operationComplete(Future<Object> future){
                 if (future.isSuccess()) {

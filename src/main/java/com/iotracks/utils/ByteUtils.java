@@ -1,7 +1,5 @@
 package com.iotracks.utils;
 
-import java.nio.ByteBuffer;
-
 /**
  * Utils class for convenient byte transformations.
  */
@@ -66,25 +64,6 @@ public class ByteUtils {
 
     public static String bytesToString(byte[] bytes) {
         return new String(bytes);
-    }
-
-    public static String byteArrayToString(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-
-        result.append("[");
-        for (byte b : bytes) {
-            if (result.length() > 1) {
-                result.append(", ");
-            }
-            result.append(b);
-        }
-        result.append("]");
-
-        return result.toString();
-    }
-
-    public static byte[] decimalToBytes(double x) {
-        return ByteBuffer.allocate(8).putDouble(x).array();
     }
 
     public static int getLength(String s) {

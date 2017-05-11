@@ -17,26 +17,26 @@ public class ScheduleSender {
     private String mContId;
 
 
-    public ScheduleSender(String pContId, WebSocketManager pWsManager){
-        mMessInt = TMGConfigManager.getDataMessageInteval();
-        mConfInt = TMGConfigManager.getControlMessageInteval();
+    public ScheduleSender(String pContId, WebSocketManager pWsManager) {
+        mMessInt = TMGConfigManager.getDataMessageInterval();
+        mConfInt = TMGConfigManager.getControlMessageInterval();
         mWsManager = pWsManager;
         mContId = pContId;
         mScheduler = Executors.newScheduledThreadPool(2);
     }
 
-    public void start(){
+    public void start() {
         /*mScheduler.schedule(new MessageSender(), mMessInt, TimeUnit.MILLISECONDS);
         mScheduler.schedule(new ConfigSender(), mConfInt, TimeUnit.MILLISECONDS);*/
         mScheduler.scheduleWithFixedDelay(new MessageSender(), 0, mMessInt, TimeUnit.MILLISECONDS);
         mScheduler.scheduleWithFixedDelay(new ConfigSender(), 0, mConfInt, TimeUnit.MILLISECONDS);
     }
 
-    public void stop(){
+    public void stop() {
         mScheduler.shutdown();
     }
 
-    private class MessageSender implements Runnable{
+    private class MessageSender implements Runnable {
 
         @Override
         public void run() {
@@ -45,7 +45,7 @@ public class ScheduleSender {
         }
     }
 
-    private class ConfigSender implements Runnable{
+    private class ConfigSender implements Runnable {
 
         @Override
         public void run() {

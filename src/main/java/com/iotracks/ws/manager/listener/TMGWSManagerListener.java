@@ -1,9 +1,9 @@
 package com.iotracks.ws.manager.listener;
 
 import com.iotracks.tmg.manager.TMGMessageManager;
+import com.iotracks.utils.ByteUtils;
 import com.iotracks.utils.IOMessageUtils;
 import com.iotracks.utils.elements.IOMessage;
-import com.iotracks.utils.ByteUtils;
 import com.iotracks.ws.manager.WebSocketManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,7 +25,7 @@ public class TMGWSManagerListener implements WebSocketManagerListener {
         ByteBuf content = frame.content();
         if(content.isReadable()) {
             Byte opcode = content.readByte();
-            if (opcode == WebSocketManager.OPCODE_MSG.intValue()) {
+            if (opcode.equals(WebSocketManager.OPCODE_MSG)) {
                 System.out.println("GOT MSG via SOCKET");
                 byte[] byteArray = new byte[content.readableBytes()];
                 int readerIndex = content.readerIndex();
@@ -34,8 +34,8 @@ public class TMGWSManagerListener implements WebSocketManagerListener {
                 IOMessage message = new IOMessage(Arrays.copyOfRange(byteArray, 4, totalMsgLength + 4));
                 message.setId(IOMessageUtils.generateID());
                 message.setTimestamp(System.currentTimeMillis());
-                System.out.println("Message: \n" + message.toString());
-//                TMGMessageManager.saveMessage(message);
+//                System.out.println("Message: \n" + message.toString());
+                TMGMessageManager.saveMessage(message);
                 wsManager.sendReceipt(ctx, message.getId(), message.getTimestamp());
             }
         }

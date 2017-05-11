@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  *
  * Created by forte on 3/29/16.
  */
-public class TMGConfigManager {
+class TMGConfigManager {
 
     private static final Logger log = Logger.getLogger(TMGConfigManager.class.getName());
 
@@ -25,7 +25,7 @@ public class TMGConfigManager {
      *
      * @return long
      */
-    public static long getDataMessageInteval(){
+    static long getDataMessageInterval(){
         try {
             return Long.valueOf(getConfigFile().getElementsByTagName(DATA_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class TMGConfigManager {
      *
      * @return long
      */
-    public static long getControlMessageInteval(){
+    static long getControlMessageInterval(){
         try {
             return Long.valueOf(getConfigFile().getElementsByTagName(CONTROL_MSG_INTERVAL_TAG_NAME).item(0).getTextContent());
         } catch (Exception e) {

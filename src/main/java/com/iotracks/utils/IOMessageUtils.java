@@ -1,6 +1,7 @@
 package com.iotracks.utils;
 
 import java.util.Base64;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +48,6 @@ public class IOMessageUtils {
     }
 
     public static String generateID() {
-        return "IOMSID_" + (long) Math.floor(Math.random() * 1000 * 1000);
+        return UUID.randomUUID().toString();
     }
 }
