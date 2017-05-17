@@ -1,0 +1,22 @@
+{
+	"selections": [
+		{
+			"inputtype": "weather/mixed/open-weather-map",
+			"inputformat": "text/json",
+			"outputtype": "temperature",
+			"outputformat": "decimal/kelvin",
+			"outputs": [
+				{
+					"subselection": "main.temp",
+					"outputjsonarray": false,
+					"fieldname": "temperature"
+				},
+				{
+					"subselection": "wind.speed",
+					"outputjsonarray": false,
+					"fieldname": "windspeed"
+				}
+			]
+		}
+	]
+}

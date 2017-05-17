@@ -1,0 +1,208 @@
+<messages>
+    <iomessage>
+        <id>bar</id>
+        <tag>Bosch Camera 16</tag>
+        <groupid></groupid>
+        <sequencenumber>321</sequencenumber>
+        <sequencetotal>46432</sequencetotal>
+        <priority>0</priority>
+        <timestamp>1234567890123</timestamp>
+        <publisher>publisher_1</publisher>
+        <authid></authid>
+        <authgroup></authgroup>
+        <version>4</version>
+        <chainposition>0</chainposition>
+        <hash></hash>
+        <previoushash></previoushash>
+        <nonce></nonce>
+        <difficultytarget>125</difficultytarget>
+        <infotype>weather/mixed/open-weather-map</infotype>
+        <infoformat>text/json</infoformat>
+        <contentdata>{
+            "coord": {
+            "lon": -122.45,
+            "lat": 37.77
+            },
+            "weather": [
+            {
+            "id": 741,
+            "main": "Fog",
+            "description": "fog",
+            "icon": "50n"
+            },
+            {
+            "id": 701,
+            "main": "Mist",
+            "description": "mist",
+            "icon": "50n"
+            }
+            ],
+            "base": "cmc stations",
+            "main": {
+            "temp": 286.39,
+            "pressure": 1012,
+            "humidity": 81,
+            "temp_min": 282.04,
+            "temp_max": 291.48
+            },
+            "wind": {
+            "speed": 4.6,
+            "deg": 280
+            },
+            "clouds": {
+            "all": 20
+            },
+            "dt": 1464690396,
+            "sys": {
+            "type": 1,
+            "id": 478,
+            "message": 0.0039,
+            "country": "US",
+            "sunrise": 1464698973,
+            "sunset": 1464751566
+            },
+            "id": 5391997,
+            "name": "San Francisco County",
+            "cod": 200
+            }
+        </contentdata>
+        <contextdata>contentdata1111</contextdata>
+    </iomessage>
+    <iomessage>
+        <id>foo</id>
+        <tag>LG as</tag>
+        <groupid></groupid>
+        <sequencenumber>17</sequencenumber>
+        <sequencetotal>564213</sequencetotal>
+        <priority>0</priority>
+        <timestamp>1234567890123</timestamp>
+        <publisher>publisher_2</publisher>
+        <authid></authid>
+        <authgroup></authgroup>
+        <version>4</version>
+        <chainposition>0</chainposition>
+        <hash></hash>
+        <previoushash></previoushash>
+        <nonce></nonce>
+        <difficultytarget>126</difficultytarget>
+        <infotype>weather/mixed/open-weather-map</infotype>
+        <infoformat>text/json</infoformat>
+        <contextdata>contextdata2222</contextdata>
+        <contentdata>{
+            "coord": {
+            "lon": -122.45,
+            "lat": 37.77
+            },
+            "weather": [
+            {
+            "id": 741,
+            "main": "Fog",
+            "description": "fog",
+            "icon": "50n"
+            },
+            {
+            "id": 701,
+            "main": "Mist",
+            "description": "mist",
+            "icon": "50n"
+            }
+            ],
+            "base": "cmc stations",
+            "main": {
+            "temp": 100.54,
+            "pressure": 1012,
+            "humidity": 81,
+            "temp_min": 282.04,
+            "temp_max": 291.48
+            },
+            "wind": {
+            "speed": 65423,
+            "deg": 280
+            },
+            "clouds": {
+            "all": 20
+            },
+            "dt": 1464690396,
+            "sys": {
+            "type": 1,
+            "id": 478,
+            "message": 0.0039,
+            "country": "US",
+            "sunrise": 1464698973,
+            "sunset": 1464751566
+            },
+            "id": 5391997,
+            "name": "San Francisco County",
+            "cod": 200
+            }
+        </contentdata>
+    </iomessage>
+    <iomessage>
+        <id>lalalla</id>
+        <tag>Lalal Tag</tag>
+        <groupid></groupid>
+        <sequencenumber>54612</sequencenumber>
+        <sequencetotal>4542312</sequencetotal>
+        <priority>0</priority>
+        <timestamp>1234567890123</timestamp>
+        <publisher>publisher_3</publisher>
+        <authid></authid>
+        <authgroup></authgroup>
+        <version>4</version>
+        <chainposition>0</chainposition>
+        <hash></hash>
+        <previoushash></previoushash>
+        <nonce></nonce>
+        <difficultytarget>65432</difficultytarget>
+        <infotype>weather/mixed/open-weather-map</infotype>
+        <infoformat>text/json</infoformat>
+        <contextdata>contextdata3333</contextdata>
+        <contentdata>{
+            "coord": {
+            "lon": -122.45,
+            "lat": 37.77
+            },
+            "weather": [
+            {
+            "id": 741,
+            "main": "Fog",
+            "description": "fog",
+            "icon": "50n"
+            },
+            {
+            "id": 701,
+            "main": "Mist",
+            "description": "mist",
+            "icon": "50n"
+            }
+            ],
+            "base": "cmc stations",
+            "main": {
+            "temp": 286.39,
+            "pressure": 1012,
+            "humidity": 81,
+            "temp_min": 282.04,
+            "temp_max": 291.48
+            },
+            "wind": {
+            "deg": 280
+            },
+            "clouds": {
+            "all": 20
+            },
+            "dt": 1464690396,
+            "sys": {
+            "type": 1,
+            "id": 478,
+            "message": 0.0039,
+            "country": "US",
+            "sunrise": 1464698973,
+            "sunset": 1464751566
+            },
+            "id": 5391997,
+            "name": "San Francisco County",
+            "cod": 200
+            }
+        </contentdata>
+    </iomessage>
+</messages>
