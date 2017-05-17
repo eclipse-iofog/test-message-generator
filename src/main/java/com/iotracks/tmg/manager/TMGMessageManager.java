@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 /**
  * Test Message Generator Manager of IOMessages for mimicking communication with ioFog.
- *
  * Created by forte on 3/29/16.
  */
 public class TMGMessageManager {
@@ -40,10 +39,10 @@ public class TMGMessageManager {
      *
      * @return List<IOMessage>
      */
-    public static List<IOMessage> getAllMessages(){
+    public static List<IOMessage> getAllMessages() {
         NodeList xmlMessagesList = getMessagesFile().getElementsByTagName(IO_MESSAGE_TAG_NAME);
         List<IOMessage> messages = new ArrayList<>(xmlMessagesList.getLength());
-        for (int i = 0; i < xmlMessagesList.getLength(); i++ ) {
+        for (int i = 0; i < xmlMessagesList.getLength(); i++) {
             Node xmlMessage = xmlMessagesList.item(i);
             messages.add(IOMessageConverter.getMessageFromNode(xmlMessage));
         }
@@ -55,7 +54,7 @@ public class TMGMessageManager {
      *
      * @return IOMessage
      */
-    public static IOMessage getRandomMessage(){
+    public static IOMessage getRandomMessage() {
         NodeList xmlMessagesList = getMessagesFile().getElementsByTagName(IO_MESSAGE_TAG_NAME);
         int randomIndex = new Random().nextInt(xmlMessagesList.getLength());
         return IOMessageConverter.getMessageFromNode(xmlMessagesList.item(randomIndex));
@@ -66,7 +65,7 @@ public class TMGMessageManager {
      *
      * @param message - IOMessage to be saved
      */
-    public static void saveMessage(IOMessage message){
+    public static void saveMessage(IOMessage message) {
         Element rootElement = getReceivedMessagesFile().getDocumentElement();
         rootElement.appendChild(IOMessageConverter.getElementFromMessage(message, getReceivedMessagesFile()));
         TMGFileUtils.saveFile(getReceivedMessagesFile(), RECEIVED_MESSAGES_FILE_SOURCE);
@@ -77,16 +76,19 @@ public class TMGMessageManager {
      *
      * @return JsonObject
      */
-    public static JsonObject getContainerConfig(){
-        if(containerConfig == null) {
+    public static JsonObject getContainerConfig() {
+        if (containerConfig == null) {
             FileReader fileReader = TMGFileUtils.readFile(CONTAINER_CONFIG_FILE_SOURCE);
-            if(fileReader != null) {
+            if (fileReader != null) {
                 JsonReader reader = Json.createReader(fileReader);
-                containerConfig = reader.readObject();
+                JsonObject config = reader.readObject();
+                containerConfig = Json.createObjectBuilder()
+                                      .add("status", "okay")
+                                      .add("config", config.toString()).build();
                 reader.close();
                 try {
                     fileReader.close();
-                } catch(Exception e) {
+                } catch (Exception e) {
                     log.info("Error closing file reader stream for configuration JSON file.");
                 }
             }
@@ -95,14 +97,14 @@ public class TMGMessageManager {
     }
 
     private static Document getMessagesFile() {
-        if (messagesFile == null ) {
+        if (messagesFile == null) {
             messagesFile = TMGFileUtils.getXMLDocument(MESSAGES_FILE_SOURCE);
         }
         return messagesFile;
     }
 
     private static Document getReceivedMessagesFile() {
-        if (receivedMessagesFile == null ) {
+        if (receivedMessagesFile == null) {
             receivedMessagesFile = TMGFileUtils.getXMLDocument(RECEIVED_MESSAGES_FILE_SOURCE);
         }
         return receivedMessagesFile;
