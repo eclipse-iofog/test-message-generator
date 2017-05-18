@@ -74,19 +74,17 @@ public class TMGHandler extends SimpleChannelInboundHandler {
 
     private void runTask(Callable<?> callable, ChannelHandlerContext ctx, FullHttpRequest req) {
         final Future<?> future = executor.submit(callable);
-        future.addListener(new GenericFutureListener<Future<Object>>() {
-            public void operationComplete(Future<Object> future) {
-                if (future.isSuccess()) {
-                    try {
-                        sendHttpResponse(ctx, req, (FullHttpResponse) future.get());
-                    } catch (InterruptedException | ExecutionException e) {
-                        ctx.fireExceptionCaught(e);
-                        ctx.close();
-                    }
-                } else {
-                    ctx.fireExceptionCaught(future.cause());
+        future.addListener((GenericFutureListener<Future<Object>>) future1 -> {
+            if (future1.isSuccess()) {
+                try {
+                    sendHttpResponse(ctx, req, (FullHttpResponse) future1.get());
+                } catch (InterruptedException | ExecutionException e) {
+                    ctx.fireExceptionCaught(e);
                     ctx.close();
                 }
+            } else {
+                ctx.fireExceptionCaught(future1.cause());
+                ctx.close();
             }
         });
     }

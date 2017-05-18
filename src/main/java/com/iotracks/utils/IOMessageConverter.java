@@ -149,9 +149,13 @@ public class IOMessageConverter {
         appendMessageProperty(ioMessage, document,
                               IOMessage.INFO_FORMAT_FIELD_NAME, message.getInfoFormat());
         appendMessageProperty(ioMessage, document,
-                              IOMessage.CONTEXT_DATA_FIELD_NAME, new String(message.getContextData()));
+                              IOMessage.CONTEXT_DATA_FIELD_NAME, new String((message.getContextData() == null) ?
+                                                                            ByteUtils.stringToBytes("") :
+                                                                            message.getContextData()));
         appendMessageProperty(ioMessage, document,
-                              IOMessage.CONTENT_DATA_FIELD_NAME, new String(message.getContentData()));
+                              IOMessage.CONTENT_DATA_FIELD_NAME, new String((message.getContentData() == null) ?
+                                                                            ByteUtils.stringToBytes("") :
+                                                                            message.getContentData()));
         return ioMessage;
     }
 

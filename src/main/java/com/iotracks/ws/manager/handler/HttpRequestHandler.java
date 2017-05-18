@@ -174,7 +174,7 @@ class HttpRequestHandler implements Callable {
             return sendErrorResponse(errors);
         }
         bytesData.writeBytes(TMGMessageManager.getContainerConfig().toString().getBytes());
-        //System.out.println("Sending config");
+        System.out.println("Sending config");
         return sendResponse();
     }
 
