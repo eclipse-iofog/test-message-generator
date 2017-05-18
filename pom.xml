@@ -3,16 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.iotracks</groupId>
     <artifactId>test-message-generator</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-
     <name>ioTracks Test Message Generator</name>
     <description>Test Message Generator mimics ioFog API server. Serves for test purposes.</description>
     <url>http://www.iotracks.com/</url>
-
     <licenses>
         <license>
             <name>MIT License</name>
@@ -20,7 +17,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
     <scm>
         <url>https://github.com/iotracks/test-message-generator</url>
     </scm>
@@ -41,9 +37,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.6.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -52,18 +47,65 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                        <archive>
-                                <manifest>
-                                        <mainClass>com.iotracks.tmg.TestMessageGenerator</mainClass>
-                                 </manifest>
-                        </archive>
-                        <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                        </descriptorRefs>
+                    <finalName>TMG</finalName>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.iotracks.tmg.TestMessageGenerator</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
-           </plugin>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <id>l4j-gui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>console</headerType>
+                            <outfile>target/TMG.exe</outfile>
+                            <jar>target/TMG.jar</jar>
+                            <errTitle>Error in launch4j plugin</errTitle>
+                            <classPath>
+                                <mainClass>com.iotracks.tmg.TestMessageGenerator</mainClass>
+                            </classPath>
+                            <jre>
+                                <path>./jre</path>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>1.0.0.0</fileVersion>
+                                <txtFileVersion>1.0.0.0</txtFileVersion>
+                                <fileDescription>des</fileDescription>
+                                <copyright>Copyright (c) 2017</copyright>
+                                <companyName>comp</companyName>
+                                <productVersion>3.0.0.0</productVersion>
+                                <txtProductVersion>${project.version}</txtProductVersion>
+                                <productName>TMG</productName>
+                                <internalName>TMG</internalName>
+                                <originalFilename>TMG.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
-
 </project>
