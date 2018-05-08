@@ -1,6 +1,6 @@
 # Test Message Generator
 
-As developers build ioElement containers, they start by building the code in a non-container environment. They need to test the code before spending the time turning it into a published container, but they can't actually test the processing of messages or connection to the ioFabric instance without going through the publishing and deployment process.
+As developers build ioElement containers, they start by building the code in a non-container environment. They need to test the code before spending the time turning it into a published container, but they can't actually test the processing of messages or connection to the ioFog instance without going through the publishing and deployment process.
 
 Test Message Generator is a surrogate version of the ioFog Local API. It mimics the API endpoints of the real ioFog Local API, including offering the Control Websocket and Message Websocket. It runs on "localhost" so it can be reached directly on the computer that is being used to build the ioElement container.
 

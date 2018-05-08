@@ -1,7 +1,7 @@
-package com.iotracks.tmg.manager;
+package org.eclipse.iofog.tmg.manager;
 
 
-import com.iotracks.ws.manager.WebSocketManager;
+import org.eclipse.iofog.ws.manager.WebSocketManager;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,7 +38,7 @@ public class ScheduleSender {
 
         @Override
         public void run() {
-            System.out.println("Sending message");
+            System.out.println("Sending message: " + System.currentTimeMillis());
             mWsManager.sendMessage(mContId, TMGMessageManager.getRandomMessage().toBytes());
         }
     }
@@ -47,7 +47,7 @@ public class ScheduleSender {
 
         @Override
         public void run() {
-            System.out.println("Sending control signal");
+            System.out.println("Sending control signal : " + System.currentTimeMillis());
             mWsManager.sendControl(mContId);
         }
     }

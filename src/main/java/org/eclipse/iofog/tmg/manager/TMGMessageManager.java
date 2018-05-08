@@ -1,8 +1,8 @@
-package com.iotracks.tmg.manager;
+package org.eclipse.iofog.tmg.manager;
 
-import com.iotracks.utils.elements.IOMessage;
-import com.iotracks.utils.IOMessageConverter;
-import com.iotracks.utils.TMGFileUtils;
+import org.eclipse.iofog.utils.IOMessageConverter;
+import org.eclipse.iofog.utils.TMGFileUtils;
+import org.eclipse.iofog.utils.elements.IOMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -19,7 +19,9 @@ import java.util.logging.Logger;
 
 /**
  * Test Message Generator Manager of IOMessages for mimicking communication with ioFog.
- * Created by forte on 3/29/16.
+ *
+ * @author Eclipse ioFog { Iryna Laryionava, Pavel Kazlou, Sasha Yakovtseva }
+ * @since 3/29/16.
  */
 public class TMGMessageManager {
 

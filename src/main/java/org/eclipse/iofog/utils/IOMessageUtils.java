@@ -1,4 +1,4 @@
-package com.iotracks.utils;
+package org.eclipse.iofog.utils;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -7,10 +7,9 @@ import java.util.logging.Logger;
 
 /**
  * Utils class for convenient encoding and decoding for IOMessage
- * <p>
- * Created by forte on 3/23/16.
  *
- * @author ilaryionava
+ * @author Eclipse ioFog { Iryna Laryionava, Pavel Kazlou, Sasha Yakovtseva }
+ * @since 3/23/16.
  */
 public class IOMessageUtils {
 

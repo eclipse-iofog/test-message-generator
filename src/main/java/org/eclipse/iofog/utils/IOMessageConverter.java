@@ -1,7 +1,7 @@
-package com.iotracks.utils;
+package org.eclipse.iofog.utils;
 
-import com.iotracks.tmg.manager.TMGMessageManager;
-import com.iotracks.utils.elements.IOMessage;
+import org.eclipse.iofog.tmg.manager.TMGMessageManager;
+import org.eclipse.iofog.utils.elements.IOMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -9,8 +9,9 @@ import org.w3c.dom.NodeList;
 
 /**
  * Converter for IOMessage to XML representation and backwards.
- * <p>
- * Created by forte on 3/29/16.
+ *
+ * @author Eclipse ioFog { Iryna Laryionava, Pavel Kazlou, Sasha Yakovtseva }
+ * @since 3/29/16.
  */
 public class IOMessageConverter {
 

@@ -1,13 +1,13 @@
-package com.iotracks.ws.manager.handler;
+package org.eclipse.iofog.ws.manager.handler;
 
-import com.iotracks.tmg.manager.TMGMessageManager;
-import com.iotracks.utils.IOMessageUtils;
-import com.iotracks.utils.IOFogResponseUtils;
-import com.iotracks.utils.elements.IOMessage;
-import com.iotracks.utils.elements.LocalAPIURLType;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.*;
 import io.netty.util.internal.StringUtil;
+import org.eclipse.iofog.tmg.manager.TMGMessageManager;
+import org.eclipse.iofog.utils.IOFogResponseUtils;
+import org.eclipse.iofog.utils.IOMessageUtils;
+import org.eclipse.iofog.utils.elements.IOMessage;
+import org.eclipse.iofog.utils.elements.LocalAPIURLType;
 
 import javax.json.*;
 import java.io.StringReader;

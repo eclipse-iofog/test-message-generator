@@ -1,4 +1,4 @@
-package com.iotracks.utils.elements;
+package org.eclipse.iofog.utils.elements;
 
 import io.netty.handler.codec.http.HttpMethod;
 

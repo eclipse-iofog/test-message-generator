@@ -3,22 +3,26 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.iotracks</groupId>
+
+    <groupId>org.eclipse.iofog</groupId>
     <artifactId>test-message-generator</artifactId>
-    <version>1.0</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
-    <name>ioTracks Test Message Generator</name>
-    <description>Test Message Generator mimics ioFog API server. Serves for test purposes.</description>
-    <url>http://www.iotracks.com/</url>
-    <licenses>
+
+    <name>Test Message Generator</name>
+    <description>Test Message Generator mimics Eclipse ioFog API. Serves for test purposes.</description>
+    <url>http://iofog.org/</url>
+
+    <!--<licenses>
         <license>
             <name>MIT License</name>
             <url>http://www.opensource.org/licenses/mit-license.php</url>
             <distribution>repo</distribution>
         </license>
-    </licenses>
+    </licenses>-->
+
     <scm>
-        <url>https://github.com/iotracks/test-message-generator</url>
+        <url>https://github.com/ioFog/test-message-generator.git</url>
     </scm>
 
     <dependencies>
@@ -50,7 +54,7 @@
                     <finalName>TMG</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>com.iotracks.tmg.TestMessageGenerator</mainClass>
+                            <mainClass>org.eclipse.iofog.tmg.TestMessageGenerator</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -85,7 +89,7 @@
                             <jar>target/TMG.jar</jar>
                             <errTitle>Error in launch4j plugin</errTitle>
                             <classPath>
-                                <mainClass>com.iotracks.tmg.TestMessageGenerator</mainClass>
+                                <mainClass>org.eclipse.iofog.tmg.TestMessageGenerator</mainClass>
                             </classPath>
                             <jre>
                                 <path>./jre</path>
@@ -108,4 +112,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

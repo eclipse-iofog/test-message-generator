@@ -1,6 +1,6 @@
-package com.iotracks.tmg.manager;
+package org.eclipse.iofog.tmg.manager;
 
-import com.iotracks.utils.TMGFileUtils;
+import org.eclipse.iofog.utils.TMGFileUtils;
 import org.w3c.dom.Document;
 
 import java.util.logging.Logger;
@@ -8,7 +8,8 @@ import java.util.logging.Logger;
 /**
  * Test Message Generator Configuration Manager.
  *
- * Created by forte on 3/29/16.
+ * @author Eclipse ioFog { Iryna Laryionava, Pavel Kazlou, Sasha Yakovtseva }
+ * @since 3/29/16.
  */
 class TMGConfigManager {
 

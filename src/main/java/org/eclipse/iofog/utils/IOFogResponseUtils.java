@@ -1,9 +1,10 @@
-package com.iotracks.utils;
+package org.eclipse.iofog.utils;
 
 /**
  * Util class for all response field names that Container can get from ioFog.
  *
- * @author ilaryionava
+ * @author Eclipse ioFog { Iryna Laryionava, Pavel Kazlou, Sasha Yakovtseva }
+ * @since 3/29/16.
  */
 public class IOFogResponseUtils {
 

@@ -1,13 +1,13 @@
-package com.iotracks.ws.manager.listener;
+package org.eclipse.iofog.ws.manager.listener;
 
-import com.iotracks.tmg.manager.TMGMessageManager;
-import com.iotracks.utils.ByteUtils;
-import com.iotracks.utils.IOMessageUtils;
-import com.iotracks.utils.elements.IOMessage;
-import com.iotracks.ws.manager.WebSocketManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import org.eclipse.iofog.tmg.manager.TMGMessageManager;
+import org.eclipse.iofog.utils.ByteUtils;
+import org.eclipse.iofog.utils.IOMessageUtils;
+import org.eclipse.iofog.utils.elements.IOMessage;
+import org.eclipse.iofog.ws.manager.WebSocketManager;
 
 import java.util.Arrays;
 

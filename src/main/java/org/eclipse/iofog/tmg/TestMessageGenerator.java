@@ -1,6 +1,5 @@
-package com.iotracks.tmg;
+package org.eclipse.iofog.tmg;
 
-import com.iotracks.ws.manager.handler.TMGHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -15,6 +14,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
+import org.eclipse.iofog.ws.manager.handler.TMGHandler;
 
 /**
  * TMG - Test Message Generator main class (executor).

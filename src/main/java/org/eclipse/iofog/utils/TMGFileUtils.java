@@ -1,4 +1,4 @@
-package com.iotracks.utils;
+package org.eclipse.iofog.utils;
 
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
@@ -17,7 +17,8 @@ import java.util.logging.Logger;
 /**
  * Utils class to open files and save data.
  *
- * Created by forte on 3/29/16.
+ * @author Eclipse ioFog { Iryna Laryionava, Pavel Kazlou, Sasha Yakovtseva }
+ * @since 3/29/16.
  */
 public class TMGFileUtils {
 

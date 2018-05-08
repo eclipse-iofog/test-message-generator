@@ -1,9 +1,5 @@
-package com.iotracks.ws.manager.handler;
+package org.eclipse.iofog.ws.manager.handler;
 
-import com.iotracks.tmg.manager.ScheduleSender;
-import com.iotracks.utils.elements.LocalAPIURLType;
-import com.iotracks.ws.manager.WebSocketManager;
-import com.iotracks.ws.manager.listener.TMGWSManagerListener;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -18,6 +14,10 @@ import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import org.eclipse.iofog.tmg.manager.ScheduleSender;
+import org.eclipse.iofog.utils.elements.LocalAPIURLType;
+import org.eclipse.iofog.ws.manager.WebSocketManager;
+import org.eclipse.iofog.ws.manager.listener.TMGWSManagerListener;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

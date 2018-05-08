@@ -1,15 +1,14 @@
-package com.iotracks.ws.manager.listener;
+package org.eclipse.iofog.ws.manager.listener;
 
-import com.iotracks.ws.manager.WebSocketManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import org.eclipse.iofog.ws.manager.WebSocketManager;
 
 /**
  * Interface of listener for WebSocket Manager.
  *
- * Created by forte on 3/30/16.
- *
- * @author ilaryionava
+ * @author Eclipse ioFog { Iryna Laryionava, Pavel Kazlou, Sasha Yakovtseva }
+ * @since 3/30/16.
  */
 public interface WebSocketManagerListener {
 

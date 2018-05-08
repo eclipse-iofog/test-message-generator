@@ -1,4 +1,4 @@
-package com.iotracks.utils;
+package org.eclipse.iofog.utils;
 
 /**
  * Utils class for convenient byte transformations.
